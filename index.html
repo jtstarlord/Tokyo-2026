@@ -1,0 +1,2882 @@
+<!DOCTYPE html>
+<html lang="en" translate="no">
+<head>
+<meta name="google" content="notranslate">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<link rel="manifest" href="site.webmanifest">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="Tokyo 2026">
+<meta name="theme-color" content="#c8a87a">
+<link rel="icon" href="apple-touch-icon.png" type="image/png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="Tokyo 2026">
+<title>Tokyo — Dec 2026</title>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css"/>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%;overflow:hidden}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:#f9f7f4;color:#1a1a1a;font-size:14px;display:flex;flex-direction:column}
+
+/* TOP BAR */
+.topbar{height:52px;background:#fff;border-bottom:1px solid #ece9e4;display:flex;align-items:center;justify-content:space-between;padding:0 20px;flex-shrink:0;z-index:200}
+.topbar-left{display:flex;align-items:center;gap:10px}
+.logo-icon{width:28px;height:28px;background:#c8a87a;border-radius:6px;display:flex;align-items:center;justify-content:center}
+.logo-icon svg{width:16px;height:16px;fill:#fff}
+.trip-name{font-size:15px;font-weight:600;color:#1a1a1a}
+.trip-sub{font-size:12px;color:#888;margin-top:1px}
+.topbar-right{display:flex;gap:8px}
+.tb-btn{display:flex;align-items:center;gap:6px;padding:6px 13px;border-radius:7px;border:1px solid #ddd;background:#fff;font-size:12px;color:#444;cursor:pointer;font-family:inherit;transition:all 0.12s}
+.tb-btn:hover{border-color:#999;color:#1a1a1a}
+.tb-btn.active{background:#1a1a1a;color:#fff;border-color:#1a1a1a}
+.tb-btn svg{width:13px;height:13px}
+
+/* DAY STRIP */
+.day-strip-wrap{background:#fff;border-bottom:1px solid #ece9e4;flex-shrink:0;overflow-x:auto;z-index:100;-webkit-overflow-scrolling:touch}
+.day-strip-wrap::-webkit-scrollbar{height:3px}
+.day-strip-wrap::-webkit-scrollbar-thumb{background:#ddd;border-radius:2px}
+.day-strip{display:flex;padding:0 16px}
+.day-chip{display:flex;flex-direction:column;align-items:center;padding:10px 14px 0;cursor:pointer;border-bottom:3px solid transparent;min-width:64px;flex-shrink:0;transition:border-color 0.15s;text-decoration:none}
+.day-chip:hover .dc-num{color:#555}
+.day-chip.active{border-bottom-color:#c8773a}
+.dc-label{font-size:9px;font-weight:600;color:#aaa;letter-spacing:0.05em;text-transform:uppercase;margin-bottom:2px}
+.dc-date{font-size:13px;font-weight:600;color:#1a1a1a;margin-bottom:2px}
+.day-chip:not(.active) .dc-date{color:#555}
+.dc-day{font-size:10px;color:#aaa;margin-bottom:8px}
+.day-chip.active .dc-label{color:#c8773a}
+.day-chip.active .dc-date{color:#c8773a}
+.day-chip.active .dc-day{color:#c8773a}
+
+/* MAIN SPLIT */
+.split{display:flex;flex:1;overflow:hidden}
+
+/* LEFT PANEL */
+.left-panel{width:50%;flex-shrink:0;min-width:280px;overflow-y:auto;background:#f9f7f4;-webkit-overflow-scrolling:touch}
+.lp-inner{max-width:740px;margin:0 auto}
+.split-divider{width:6px;flex-shrink:0;cursor:col-resize;background:#ece9e4;position:relative;z-index:150;transition:background 0.12s}
+.split-divider:hover,.split-divider.dragging{background:#c8a87a}
+body.resizing{cursor:col-resize;user-select:none}
+body.resizing .map-panel,body.resizing .left-panel{pointer-events:none}
+.left-panel::-webkit-scrollbar{width:4px}
+.left-panel::-webkit-scrollbar-thumb{background:#ddd;border-radius:2px}
+
+.day-hero{padding:16px 20px 12px;background:#f9f7f4;border-bottom:1px solid #ece9e4}
+.day-hero-date{font-size:10px;font-weight:700;color:#c8773a;letter-spacing:0.08em;text-transform:uppercase;margin-bottom:4px;display:flex;align-items:center;gap:6px}
+.location-badge{display:inline-flex;align-items:center;gap:4px;font-size:10px;color:#888;font-weight:500}
+.location-badge svg{width:10px;height:10px;fill:#aaa}
+.day-hero-title{font-size:28px;font-weight:700;color:#1a1a1a;letter-spacing:-0.5px;line-height:1.1;margin-bottom:4px}
+.day-hero-sub{font-size:13px;color:#888}
+.day-note-bar{background:#fdf6ee;border-left:3px solid #e8c87a;margin:0 20px 12px;padding:8px 12px;border-radius:0 6px 6px 0;font-size:12px;color:#7a5c1e;line-height:1.5}
+.wx{float:right;font-size:11px;color:#8a9bb0;font-weight:600;letter-spacing:0;text-transform:none}
+.wx.wet{color:#3d7ea6}
+.rain-bar{margin:0 20px 12px;padding:10px 13px;background:#eef4f8;border:1px solid #bcd4e2;border-radius:8px}
+.rain-hd{font-size:11px;font-weight:700;color:#2f6d90;letter-spacing:.03em;margin-bottom:4px}
+.rain-body{font-size:12px;color:#3f5a6b;line-height:1.55}
+/* --- Trip memory: ratings + impressions (captured on the ground) --- */
+.mem-block{margin-top:10px;padding:10px 12px;background:#fbf8f3;border:1px solid #ece3d5;border-radius:8px}
+.mem-head{font-size:10px;letter-spacing:.08em;text-transform:uppercase;color:#a08a63;margin-bottom:8px;font-weight:600}
+.mem-row{display:flex;align-items:center;gap:8px;margin-bottom:4px}
+.mem-who{font-size:11px;color:#7a5c1e;width:58px;flex:none;font-weight:600}
+.mem-stars{display:flex;gap:1px}
+.mem-star{-webkit-appearance:none;appearance:none;background:none;border:0;cursor:pointer;font-size:20px;line-height:1;padding:5px 3px;color:#dcd2c2;transition:color .12s}
+.mem-star.on{color:#c8a87a}
+.mem-star:active{transform:scale(1.18)}
+.mem-imp{width:100%;box-sizing:border-box;margin-top:6px;padding:7px 9px;border:1px solid #e3d8c6;border-radius:6px;font:inherit;font-size:13px;color:#4a4a4a;background:#fff;resize:vertical}
+.mem-imp::placeholder{color:#b8ab97}
+.mem-dims{margin-top:9px;border-top:1px dashed #e3d8c6;padding-top:8px}
+.mem-dim{margin-bottom:6px}
+.mem-dim-label{font-size:11px;color:#8a7660;font-weight:600;margin-bottom:1px}
+.mem-dim .mem-who{font-weight:400;color:#a08a63}
+.mem-stars-sm .mem-star{font-size:16px;padding:5px 3px}
+.mem-meta{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin-top:8px}
+.mem-here{-webkit-appearance:none;appearance:none;border:1px solid #d9cbb4;background:#fff;color:#8a7660;font:inherit;font-size:11px;padding:5px 9px;border-radius:6px;cursor:pointer}
+.mem-here-set{font-size:11px;color:#7a5c1e;font-weight:600}
+.mem-cost{width:104px;padding:5px 8px;border:1px solid #e3d8c6;border-radius:6px;font:inherit;font-size:12px;background:#fff}
+.extra-card{margin:8px 20px;padding:12px;background:#fff;border:1px dashed #c8a87a;border-radius:10px}
+.extra-title{width:100%;box-sizing:border-box;padding:7px 9px;border:1px solid #e3d8c6;border-radius:6px;font:inherit;font-size:14px;font-weight:600;color:#2c2c2c}
+.extra-del{float:right;background:none;border:0;color:#c0b4a0;font-size:11px;cursor:pointer;text-decoration:underline;padding:4px}
+.extra-add{display:block;width:calc(100% - 40px);margin:10px 20px;padding:11px;background:#fff;border:1px dashed #c8a87a;border-radius:10px;color:#8a7660;font:inherit;font-size:13px;font-weight:600;cursor:pointer}
+.nudge{margin:12px 20px;padding:11px 14px;background:#fff6e6;border:1px solid #e8c87a;border-radius:10px;font-size:13px;color:#7a5c1e;display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+.nudge b{font-weight:700}
+.sheet-back{position:fixed;inset:0;background:rgba(30,24,16,.55);z-index:9998;display:none}
+.sheet-back.open{display:block}
+.sheet{position:fixed;left:0;right:0;bottom:0;top:6%;background:#faf7f2;z-index:9999;border-radius:16px 16px 0 0;display:none;flex-direction:column;box-shadow:0 -6px 30px rgba(0,0,0,.25)}
+.sheet.open{display:flex}
+.sheet-hd{padding:14px 18px 10px;border-bottom:1px solid #ece3d5;display:flex;align-items:center;gap:10px}
+.sheet-hd h3{margin:0;font-size:15px;color:#2c2c2c}
+.sheet-hd .sub{font-size:11px;color:#a08a63}
+.sheet-x{margin-left:auto;background:none;border:0;font-size:22px;color:#a08a63;cursor:pointer;padding:2px 6px;line-height:1}
+.sheet-body{overflow-y:auto;-webkit-overflow-scrolling:touch;padding:12px 16px 20px;flex:1}
+.sheet-row{padding:10px 0;border-bottom:1px solid #f0e9dd}
+.sheet-row:last-child{border-bottom:0}
+.sheet-t{font-size:13px;font-weight:600;color:#2c2c2c;margin-bottom:4px}
+.sheet-sec{font-size:10px;letter-spacing:.08em;text-transform:uppercase;color:#c8a87a;margin:12px 0 2px;font-weight:700}
+.sheet-ft{padding:10px 16px calc(14px + env(safe-area-inset-bottom));border-top:1px solid #ece3d5;display:flex;gap:8px;align-items:center;background:#fff}
+.plan-note-label{font-size:10px;letter-spacing:.08em;text-transform:uppercase;color:#b0a48c;margin:10px 0 3px}
+.day-mem{margin:16px 20px 4px;padding:14px 16px;background:#fdf6ee;border:1px solid #e8c87a;border-radius:10px}
+.day-mem .mem-head{font-size:11px;color:#7a5c1e}
+.mem-actions{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin:14px 20px 24px}
+.mem-btn{-webkit-appearance:none;appearance:none;border:1px solid #c8a87a;background:#fff;color:#7a5c1e;font:inherit;font-size:13px;font-weight:600;padding:9px 14px;border-radius:8px;cursor:pointer}
+.mem-btn.primary{background:#c8a87a;color:#fff;border-color:#c8a87a}
+.mem-btn:active{opacity:.75}
+.mem-sync{font-size:11px;color:#a08a63;margin-left:auto}
+.mem-sync.dirty{color:#b4722a;font-weight:600}
+.mem-reset{display:block;margin:2px 20px 22px;font-size:10px;color:#c0b4a0;background:none;border:0;cursor:pointer;text-decoration:underline}
+
+.time-section{padding:0 20px 4px}
+.time-label{font-size:10px;font-weight:700;letter-spacing:0.08em;color:#c8773a;text-transform:uppercase;padding:12px 0 6px;display:flex;align-items:center;gap:8px}
+.time-label::after{content:'';flex:1;height:1px;background:#ece9e4}
+
+/* ENTRY CARDS */
+.entry-card{background:#fff;border:1px solid #ece9e4;border-radius:10px;margin-bottom:7px;overflow:hidden;cursor:pointer;transition:border-color 0.15s,box-shadow 0.15s}
+.entry-card:hover{border-color:#c8a87a;box-shadow:0 1px 6px rgba(0,0,0,0.06)}
+.entry-card.expanded{border-color:#c8773a}
+.entry-card.alert{border-left:3px solid #d05a3a}
+.entry-card.is-special{border-left:3px solid #c8a030}
+.entry-main{padding:11px 14px;display:flex;align-items:flex-start;gap:11px}
+.entry-icon{width:32px;height:32px;border-radius:8px;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:1px}
+.entry-icon svg{width:15px;height:15px}
+.ic-food{background:#FEF3E8}
+.ic-food svg{fill:#c8773a}
+.ic-museum{background:#EEF0FE}
+.ic-museum svg{fill:#5b50c8}
+.ic-antiques{background:#EDFAF4}
+.ic-antiques svg{fill:#2a9d6e}
+.ic-walk{background:#F5F5F3}
+.ic-walk svg{fill:#666}
+.ic-spa{background:#EAF4FF}
+.ic-spa svg{fill:#2979c8}
+.ic-landmark{background:#FEF0F0}
+.ic-landmark svg{fill:#c83a3a}
+.ic-hotel{background:#F5F5F3}
+.ic-hotel svg{fill:#666}
+.ic-train{background:#F3F0FF}
+.ic-train svg{fill:#7c3ac8}
+.ic-boat{background:#EAF4FF}
+.ic-boat svg{fill:#2979c8}
+.ic-shop{background:#FFF8E1}
+.ic-shop svg{fill:#b8860b}
+.entry-content{flex:1;min-width:0}
+.entry-title-row{display:flex;align-items:center;justify-content:space-between;gap:6px}
+.entry-title{font-size:13px;font-weight:600;color:#1a1a1a;line-height:1.3}
+.entry-chevron{color:#bbb;font-size:14px;flex-shrink:0;transition:transform 0.15s}
+.entry-card.expanded .entry-chevron{transform:rotate(180deg)}
+.entry-meta{display:flex;align-items:center;flex-wrap:wrap;gap:6px;margin-top:4px}
+.meta-addr{font-size:11px;color:#888;display:flex;align-items:center;gap:3px}
+.meta-addr svg{width:9px;height:9px;fill:#bbb;flex-shrink:0}
+.metro-m{display:inline-flex;align-items:center;gap:3px;background:#003189;color:#fff;border-radius:3px;padding:1px 5px;font-size:10px;font-weight:600}
+.walk-time{font-size:11px;color:#aaa}
+.price-dots{font-size:11px;color:#c8773a;letter-spacing:1px}
+.alert-pill{background:#FEF2EE;color:#c8432a;border:1px solid #f5c4b4;border-radius:4px;font-size:10px;font-weight:600;padding:1px 7px}
+
+.entry-expanded{background:#faf9f7;border-top:1px solid #f0ede8;padding:12px 14px}
+.exp-grid{display:grid;grid-template-columns:80px 1fr;gap:5px 10px;font-size:12px}
+.exp-label{color:#aaa;font-size:11px;padding-top:1px}
+.exp-val{color:#333;line-height:1.5}
+.exp-note{width:100%;font-size:12px;color:#555;border:1px solid #e5e2dc;border-radius:5px;padding:5px 8px;margin-top:8px;resize:none;font-family:inherit;background:#fff;line-height:1.5}
+.exp-note:focus{outline:1px solid #c8773a;border-color:#c8773a}
+
+/* OPEN IN MAPS BUTTON */
+.maps-btn{display:inline-flex;align-items:center;gap:5px;margin-top:8px;padding:5px 10px;border-radius:6px;border:1px solid #ddd;background:#fff;font-size:11px;color:#2979c8;cursor:pointer;font-family:inherit;text-decoration:none;transition:all 0.12s}
+.maps-btn:hover{border-color:#2979c8;background:#f0f7ff}
+.maps-btn svg{width:12px;height:12px;fill:#2979c8}
+
+/* CONTACTS PANEL */
+.contacts-panel{padding:16px 20px}
+.contacts-panel h3{font-size:14px;font-weight:600;margin-bottom:12px}
+.contact-row{display:flex;justify-content:space-between;align-items:center;padding:8px 0;border-bottom:1px solid #f0ede8}
+.contact-row:last-child{border-bottom:none}
+.cn{font-size:13px;font-weight:500}
+.cv{font-size:13px;color:#2979c8;font-variant-numeric:tabular-nums}
+.hotel-block{background:#fff;border:1px solid #ece9e4;border-radius:10px;padding:12px 14px;margin-bottom:10px}
+.hb-name{font-size:13px;font-weight:600;color:#1a1a1a}
+.hb-addr{font-size:11px;color:#888;margin-top:2px;line-height:1.4}
+.hb-phone{font-size:12px;color:#2979c8;margin-top:5px}
+.hb-dates{font-size:11px;color:#aaa;margin-top:2px}
+.hb-policy{font-size:11px;color:#8a6d3b;background:#fdf8ee;border:1px solid #f0e6cf;border-radius:8px;padding:8px 10px;margin-top:8px;line-height:1.5}
+
+/* Restaurant Ideas tab */
+.eats-panel{padding:16px 20px}
+.eats-panel h3{font-size:14px;font-weight:600;margin-bottom:8px}
+.eats-panel .mobile-map-banner{margin:12px 0}
+.eat-card{background:#fff;border:1px solid #ece9e4;border-radius:10px;padding:13px 14px;margin-bottom:10px;cursor:pointer;transition:border-color 0.12s}
+.eat-card:hover{border-color:#c8773a}
+.eat-card.selected{border-color:#c8773a;box-shadow:0 0 0 1px #c8773a}
+.eat-dir{font-size:11px;color:#2979c8;margin-top:5px;font-weight:500;line-height:1.5}
+.entry-tips{font-size:11.5px;color:#4a5568;background:#f3f7fb;border:1px solid #e2ecf5;border-radius:8px;padding:9px 11px;margin-top:9px;line-height:1.6}
+.entry-tips b{color:#2a5b8f}
+
+/* At a Glance home screen */
+.glance-panel{padding:16px 20px}
+.glance-panel h3{font-size:15px;font-weight:600;margin-bottom:6px}
+.g-legend{display:flex;flex-wrap:wrap;gap:12px;font-size:10.5px;color:#888;margin-bottom:14px}
+.g-legend .gl-lock{color:#1B3A6B}.g-legend .gl-pend{color:#a05a1a}.g-legend .gl-open{color:#4a6b4a}
+.g-day{background:#fff;border:1px solid #ece9e4;border-radius:12px;padding:12px 14px;margin-bottom:12px;cursor:pointer;transition:border-color 0.12s,box-shadow 0.12s}
+.g-day:hover{border-color:#c8a87a;box-shadow:0 1px 6px rgba(0,0,0,0.06)}
+.g-head{display:flex;align-items:baseline;gap:8px;flex-wrap:wrap;margin-bottom:4px}
+.g-daynum{font-size:9.5px;font-weight:700;color:#c8773a;letter-spacing:0.06em}
+.g-date{font-size:13px;font-weight:600;color:#1a1a1a}
+.g-theme{font-size:12px;color:#777;flex:1;min-width:0}
+.g-loc{font-size:10px;color:#999;background:#f3f1ec;border-radius:5px;padding:2px 7px;white-space:nowrap}
+.g-sec{display:flex;gap:8px;margin-top:6px}
+.g-seclabel{font-size:8.5px;font-weight:700;color:#c4beb4;letter-spacing:0.07em;width:62px;flex-shrink:0;padding-top:5px}
+.g-rows{flex:1;min-width:0}
+.g-row{font-size:11.5px;border-radius:7px;padding:4px 9px;margin-bottom:4px;line-height:1.45}
+.g-row.g-lock{background:#1B3A6B;color:#fff}
+.g-row.g-lock b{color:#cfe0f5;font-weight:600}
+.g-row.g-pend{background:#fdf3e2;border:1px solid #f0d9b2;color:#8a5a1e}
+.g-row.g-wait{background:#edf1f8;border:1px solid #ccd8ec;color:#41598c}
+.g-row.g-pend b{color:#a05a1a}
+.g-row.g-open{background:#f4f8f4;border:1px dashed #cfe0cf;color:#4a6b4a}
+.map-close{display:none;position:absolute;top:12px;right:12px;z-index:1100;padding:8px 14px;border-radius:8px;border:1px solid #ddd;background:#fff;font-size:13px;color:#1a1a1a;cursor:pointer;font-family:inherit;box-shadow:0 2px 8px rgba(0,0,0,0.15)}
+.map-panel.show-mobile .map-close{display:block}
+.eat-name{font-size:13px;font-weight:600;color:#1a1a1a}
+.eat-area{font-size:10px;font-weight:500;color:#888;background:#f3f1ec;border-radius:5px;padding:2px 7px;margin-left:5px;vertical-align:1px}
+.eat-known{font-size:12px;color:#666;margin-top:3px;line-height:1.45}
+.eat-meta{font-size:11px;color:#999;margin-top:5px;line-height:1.5}
+.eat-meta b{color:#b0623a;font-weight:600}
+.eat-res{font-size:11px;color:#555;background:#f6f4ef;border-radius:7px;padding:7px 10px;margin-top:8px;line-height:1.5}
+.eat-actions{display:flex;flex-wrap:wrap;gap:6px;margin-top:9px}
+.eat-group{font-size:11px;font-weight:600;letter-spacing:0.06em;text-transform:uppercase;color:#b0623a;margin:18px 0 8px}
+.eat-src{font-size:10.5px;color:#8a6d3b;margin-top:6px;font-style:italic}
+
+/* BOOKINGS */
+.bookings-panel{padding:16px 20px}
+.bookings-panel h3{font-size:14px;font-weight:600;margin-bottom:4px}
+.b-progress{font-size:12px;color:#888;margin-bottom:14px}
+.b-item{display:flex;align-items:flex-start;gap:10px;padding:9px 12px;border-radius:8px;background:#fff;border:1px solid #ece9e4;margin-bottom:6px}
+.b-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0;margin-top:4px}
+.b-dot.pending{background:#d05a3a}
+.b-dot.done{background:#2a9d6e}
+.b-text{font-size:12px;font-weight:500;color:#1a1a1a;line-height:1.4}
+.b-sub{font-size:11px;color:#999;margin-top:1px}
+.b-btn{font-size:11px;padding:3px 10px;border-radius:5px;border:1px solid #ddd;background:#fff;cursor:pointer;color:#555;margin-left:auto;flex-shrink:0;font-family:inherit;transition:all 0.12s}
+.b-btn:hover{border-color:#999}
+
+/* SHOPPING PANEL */
+.shopping-panel{padding:16px 20px}
+.shopping-panel h3{font-size:14px;font-weight:600;margin-bottom:4px}
+.shopping-intro{font-size:12px;color:#888;margin-bottom:14px;line-height:1.5}
+.shop-section{margin-bottom:18px}
+.shop-section-title{font-size:11px;font-weight:700;letter-spacing:0.06em;color:#c8773a;text-transform:uppercase;margin-bottom:8px;display:flex;align-items:center;gap:8px}
+.shop-section-title::after{content:'';flex:1;height:1px;background:#ece9e4}
+.shop-item{background:#fff;border:1px solid #ece9e4;border-radius:10px;margin-bottom:7px;overflow:hidden;cursor:pointer;transition:border-color 0.15s,box-shadow 0.15s}
+.shop-item:hover{border-color:#c8a87a;box-shadow:0 1px 6px rgba(0,0,0,0.06)}
+.shop-item.expanded{border-color:#c8773a}
+.shop-main{padding:11px 14px;display:flex;align-items:flex-start;gap:11px}
+.shop-icon{width:32px;height:32px;border-radius:8px;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:1px;background:#FFF8E1}
+.shop-icon svg{width:15px;height:15px;fill:#b8860b}
+.shop-content{flex:1;min-width:0}
+.shop-title-row{display:flex;align-items:center;justify-content:space-between;gap:6px}
+.shop-title{font-size:13px;font-weight:600;color:#1a1a1a;line-height:1.3}
+.shop-meta{display:flex;align-items:center;flex-wrap:wrap;gap:6px;margin-top:4px}
+.loc-badge{display:inline-flex;align-items:center;gap:3px;border-radius:4px;padding:1px 7px;font-size:10px;font-weight:600}
+.loc-paris{background:#EEF0FE;color:#5b50c8;border:1px solid #d5d0f0}
+.loc-provence{background:#EDFAF4;color:#2a7a5e;border:1px solid #b5e0cd}
+.loc-both{background:#FEF3E8;color:#c8773a;border:1px solid #e8c9a0}
+.timing-badge{font-size:10px;color:#888;display:flex;align-items:center;gap:3px}
+.timing-badge svg{width:10px;height:10px;fill:#bbb}
+.shop-expanded{background:#faf9f7;border-top:1px solid #f0ede8;padding:12px 14px;font-size:12px;color:#555;line-height:1.6}
+.shop-where{font-weight:600;color:#333;margin-bottom:4px}
+.shop-tip{margin-top:6px;padding:6px 10px;background:#fdf6ee;border-left:3px solid #e8c87a;border-radius:0 4px 4px 0;font-size:11px;color:#7a5c1e;line-height:1.5}
+.shop-check{display:flex;align-items:center;gap:8px;margin-top:8px;font-size:12px;color:#333}
+.shop-check input{accent-color:#c8773a;width:16px;height:16px}
+.shop-check.checked span{text-decoration:line-through;color:#aaa}
+.pri-badge{display:inline-flex;align-items:center;gap:3px;border-radius:4px;padding:1px 7px;font-size:10px;font-weight:600}
+.pri-essential{background:#FEF0F0;color:#c83a3a;border:1px solid #f5c4b4}
+.pri-recommended{background:#FFF8E1;color:#b8860b;border:1px solid #e8d5a0}
+.pri-nice{background:#F5F5F3;color:#888;border:1px solid #ddd}
+.loc-cdg{background:#F3F0FF;color:#7c3ac8;border:1px solid #d0c8f0}
+.shop-packing{display:flex;align-items:center;gap:5px;margin-top:6px;font-size:11px;color:#666}
+.shop-packing svg{width:11px;height:11px;fill:#999}
+.pack-carry{color:#2a7a5e}
+.pack-checked{color:#c8432a}
+.pack-either{color:#666}
+.shop-for{font-size:10px;color:#aaa;margin-left:auto}
+.cat-header{font-size:12px;font-weight:700;letter-spacing:0.04em;color:#1a1a1a;padding:10px 12px;margin-top:8px;display:flex;align-items:center;gap:8px;cursor:pointer;background:#fff;border:1px solid #ece9e4;border-radius:8px;transition:all 0.15s;user-select:none}
+.cat-header:hover{border-color:#c8a87a;box-shadow:0 1px 4px rgba(0,0,0,0.04)}
+.cat-header::before{content:'';width:3px;height:14px;border-radius:2px;background:#c8773a;flex-shrink:0}
+.cat-header .cat-count{font-size:10px;font-weight:500;color:#aaa;margin-left:4px}
+.cat-header .cat-bought{font-size:10px;font-weight:500;color:#2a9d6e;margin-left:2px}
+.cat-header .cat-chevron{margin-left:auto;color:#bbb;font-size:13px;transition:transform 0.15s;flex-shrink:0}
+.cat-header.collapsed .cat-chevron{transform:rotate(-90deg)}
+.cat-header.collapsed{color:#888;background:#faf9f7}
+.cat-items{overflow:hidden;transition:max-height 0.2s ease}
+.cat-items.collapsed{max-height:0!important;overflow:hidden}
+.shop-filter-bar{display:flex;gap:6px;margin-bottom:14px;flex-wrap:wrap}
+.shop-filter{padding:4px 10px;border-radius:12px;border:1px solid #ddd;background:#fff;font-size:11px;color:#555;cursor:pointer;font-family:inherit;transition:all 0.12s}
+.shop-filter.active{background:#1a1a1a;color:#fff;border-color:#1a1a1a}
+
+/* RIGHT MAP */
+.map-panel{flex:1;min-width:220px;position:relative;overflow:hidden}
+#the-map{width:100%;height:100%}
+.map-panel.expanded-mode{position:fixed;top:0;left:0;right:0;bottom:0;z-index:500}
+
+/* Leaflet overrides */
+.leaflet-container{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif}
+.leaflet-popup-content-wrapper{border-radius:8px;box-shadow:0 2px 12px rgba(0,0,0,0.15);border:none}
+.leaflet-popup-content{margin:10px 14px;font-size:12px;line-height:1.5}
+.leaflet-popup-tip-container{display:none}
+
+/* Part selector in topbar */
+.part-select{font-size:12px;padding:5px 10px;border:1px solid #ddd;border-radius:6px;background:#fff;color:#444;cursor:pointer;font-family:inherit}
+
+/* MOBILE MAP BANNER */
+.mobile-map-banner{display:none;background:#f0f7ff;border:1px solid #c5ddf5;border-radius:8px;margin:12px 20px;padding:10px 14px}
+.mmb-title{font-size:12px;font-weight:600;color:#1a1a1a;margin-bottom:6px}
+.mmb-btns{display:flex;flex-wrap:wrap;gap:6px}
+.mmb-btn{display:inline-flex;align-items:center;gap:5px;padding:6px 12px;border-radius:7px;border:1px solid #ccc;background:#fff;font-size:11px;color:#2979c8;cursor:pointer;font-family:inherit;text-decoration:none;transition:all 0.12s}
+.mmb-btn:hover{border-color:#2979c8;background:#f0f7ff}
+.mmb-btn svg{width:12px;height:12px}
+
+@media(max-width:700px){
+  .left-panel{width:100%;min-width:0}
+  .split-divider{display:none}
+  .map-panel{display:none}
+  .map-panel.show-mobile{display:block;position:fixed;top:0;left:0;right:0;bottom:0;z-index:500}
+  .mobile-map-banner{display:block}
+  #map-btn{display:none}
+  .topbar{height:auto;flex-wrap:wrap;padding:8px 12px;row-gap:6px}
+  .topbar-right{flex-wrap:wrap}
+}
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <div class="topbar-left">
+    <div class="logo-icon">
+      <svg viewBox="0 0 16 16"><path d="M8 1l2 4h4l-3 3 1 4-4-2.5L4 12l1-4L2 5h4z"/></svg>
+    </div>
+    <div>
+      <div class="trip-name">Tokyo</div>
+      <div class="trip-sub">Business trip · Dec 12–19, 2026</div>
+    </div>
+  </div>
+  <div class="topbar-right">
+    <select class="part-select" id="part-select" onchange="setPart(parseInt(this.value))">
+      <option value="7">✦ At a Glance</option>
+      <option value="0">Arrival &amp; Acclimation (Dec 13–14)</option>
+      <option value="1">Work Week (Dec 15–17)</option>
+      <option value="2">Wind-down &amp; Home (Dec 18–19)</option>
+      <option value="3">Bookings</option>
+      <option value="4">Shopping</option>
+      <option value="5">Restaurant Ideas</option>
+      <option value="6">Contacts</option>
+    </select>
+    <button class="tb-btn" id="map-btn" onclick="toggleMap()">
+      <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M1 3l5 2 4-2 5 2v10l-5-2-4 2-5-2V3z"/><path d="M6 5v10M10 3v10"/></svg>
+      Expand Map
+    </button>
+    <button class="tb-btn" onclick="showContacts()">
+      <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M12 2H4a1 1 0 00-1 1v10a1 1 0 001 1h8a1 1 0 001-1V3a1 1 0 00-1-1z"/><path d="M5 6h6M5 9h4"/></svg>
+      Contacts
+    </button>
+  </div>
+</div>
+
+<div class="day-strip-wrap" id="day-strip-wrap"></div>
+
+<div class="split">
+  <div class="left-panel" id="left-panel"></div>
+  <div class="split-divider" id="split-divider" title="Drag to resize · double-click for 50/50"></div>
+  <div class="map-panel" id="map-panel">
+    <button class="map-close" onclick="closeEatMap()">✕ Close map</button>
+    <div id="the-map"></div>
+  </div>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
+<script>
+
+const ICONS = {
+  food:`<svg viewBox="0 0 16 16"><path d="M5 1v6a3 3 0 006 0V1M8 1v14M3 1v4"/></svg>`,
+  museum:`<svg viewBox="0 0 16 16"><rect x="2" y="7" width="12" height="8" rx="1"/><path d="M1 7l7-5 7 5"/><rect x="5" y="10" width="2" height="5"/><rect x="9" y="10" width="2" height="5"/></svg>`,
+  antiques:`<svg viewBox="0 0 16 16"><path d="M2 14h12M3 14V7l5-4 5 4v7"/><rect x="6" y="10" width="4" height="4"/></svg>`,
+  walk:`<svg viewBox="0 0 16 16"><circle cx="8" cy="3" r="1.5"/><path d="M8 5l-2 4 2 1 1 4M6 9H4M10 7l2 1"/></svg>`,
+  spa:`<svg viewBox="0 0 16 16"><path d="M8 13s-5-3-5-7a5 5 0 0110 0c0 4-5 7-5 7z"/></svg>`,
+  landmark:`<svg viewBox="0 0 16 16"><path d="M8 1l1.5 4h4l-3.5 2.5 1.5 4L8 9l-3.5 2.5 1.5-4L2.5 5h4z"/></svg>`,
+  hotel:`<svg viewBox="0 0 16 16"><rect x="2" y="4" width="12" height="10" rx="1"/><path d="M5 14v-4h6v4M8 4V2"/></svg>`,
+  train:`<svg viewBox="0 0 16 16"><rect x="3" y="2" width="10" height="10" rx="2"/><path d="M3 8h10M6 12l-1.5 3M10 12l1.5 3M6 5h4"/></svg>`,
+  boat:`<svg viewBox="0 0 16 16"><path d="M2 11l6-8 6 8H2z"/><path d="M1 13h14M8 3v8"/></svg>`,
+  dinner:`<svg viewBox="0 0 16 16"><path d="M5 1v6a3 3 0 006 0V1M8 1v14M3 1v4"/></svg>`,
+  shop:`<svg viewBox="0 0 16 16"><path d="M4 4h8l1 4H3l1-4z"/><path d="M3 8v6a1 1 0 001 1h8a1 1 0 001-1V8"/><path d="M6 4V2h4v2"/></svg>`,
+  nav:`<svg viewBox="0 0 16 16"><path d="M8 1C5.24 1 3 3.24 3 6c0 3.75 5 9 5 9s5-5.25 5-9c0-2.76-2.24-5-5-5zm0 6.5c-.83 0-1.5-.67-1.5-1.5S7.17 4.5 8 4.5 9.5 5.17 9.5 6 8.83 7.5 8 7.5z"/></svg>`
+};
+
+function getIcon(tags) {
+  if(tags.includes('museum')) return ['museum','ic-museum'];
+  if(tags.includes('spa')) return ['spa','ic-spa'];
+  if(tags.includes('antiques')) return ['antiques','ic-antiques'];
+  if(tags.includes('landmark')) return ['landmark','ic-landmark'];
+  if(tags.includes('train')) return ['train','ic-train'];
+  if(tags.includes('boat')) return ['boat','ic-boat'];
+  if(tags.includes('dinner')||tags.includes('food')) return ['food','ic-food'];
+  if(tags.includes('hotel')) return ['hotel','ic-hotel'];
+  if(tags.includes('shop')) return ['shop','ic-shop'];
+  return ['walk','ic-walk'];
+}
+
+const PIN_COLORS = {
+  food:'#c8773a', museum:'#5b50c8', antiques:'#2a9d6e', walk:'#888',
+  spa:'#2979c8', landmark:'#c83a3a', hotel:'#1B3A6B', train:'#7c3ac8', boat:'#2979c8', shop:'#b8860b'
+};
+
+function pinColor(tags) {
+  if(tags.includes('museum')) return PIN_COLORS.museum;
+  if(tags.includes('spa')) return PIN_COLORS.spa;
+  if(tags.includes('antiques')) return PIN_COLORS.antiques;
+  if(tags.includes('landmark')) return PIN_COLORS.landmark;
+  if(tags.includes('train')) return PIN_COLORS.train;
+  if(tags.includes('boat')) return PIN_COLORS.boat;
+  if(tags.includes('hotel')) return PIN_COLORS.hotel;
+  if(tags.includes('dinner')||tags.includes('food')) return PIN_COLORS.food;
+  if(tags.includes('shop')) return PIN_COLORS.shop;
+  return PIN_COLORS.walk;
+}
+
+function addBaseTiles(map) {
+  // Esri Light Gray Canvas — keyless; replaced CARTO tiles when they began watermarking the free tier
+  L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/Canvas/World_Light_Gray_Base/MapServer/tile/{z}/{y}/{x}', {
+    attribution:'Tiles &copy; Esri &mdash; Esri, HERE, OpenStreetMap contributors', maxZoom:16
+  }).addTo(map);
+  L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/Canvas/World_Light_Gray_Reference/MapServer/tile/{z}/{y}/{x}', {maxZoom:16}).addTo(map);
+}
+
+function hotelStarIcon() {
+  return L.divIcon({
+    html:`<svg width="26" height="26" viewBox="0 0 24 24" style="filter:drop-shadow(0 1px 3px rgba(0,0,0,0.4))"><path d="M12 2l2.9 5.9 6.5.9-4.7 4.6 1.1 6.5L12 16.8l-5.8 3.1 1.1-6.5L2.6 8.8l6.5-.9z" fill="#1B3A6B" stroke="#fff" stroke-width="1.5"/></svg>`,
+    iconSize:[26,26], iconAnchor:[13,13], className:''
+  });
+}
+
+function mapsUrl(lat, lng, name) {
+  const q = encodeURIComponent(name);
+  const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent);
+  if(isIOS) return `maps://maps.apple.com/?q=${q}&ll=${lat},${lng}`;
+  return `https://www.google.com/maps/search/?api=1&query=${lat},${lng}`;
+}
+
+const TRIP = {
+ "hotels": [
+  {
+   "name": "The Tokyo EDITION, Toranomon",
+   "addr": "4-1-1 Toranomon, Minato-ku, Tokyo 105-0001 (floors 31+ of Tokyo World Gate / Kamiyacho Trust Tower)",
+   "phone": "+81 3 5422 1600",
+   "dates": "Dec 13–19 · 6 nights · The Spa 31F 10:00–22:00 (+81 3 5422 1640) · check-out 12:00, late check-out on request",
+   "lat": 35.6635,
+   "lng": 139.7452,
+   "policy": "<b>Base facts:</b> Kamiyacho station (Hibiya line) is 4 min on foot, Toranomon Hills (Hibiya line) ~7 min. The office at Atago is ~10 min on foot — no train needed all week. Breakfast at The Blue Room 7:00–10:30. <b>Massage:</b> The Spa on 31F takes bookings through the concierge; most Tokyo hotels of this class also arrange licensed in-room shiatsu through the concierge desk, usually 60 or 90 min from about ¥12,000 — ask on arrival Sunday so the Monday and Thursday slots are held."
+  }
+ ],
+ "contacts": [
+  {
+   "name": "Emergency (Japan) — police / fire & ambulance",
+   "num": "110 / 119"
+  },
+  {
+   "name": "Japan Visitor Hotline (JNTO, 24h English)",
+   "num": "+81 50 3816 2787"
+  },
+  {
+   "name": "U.S. Embassy Tokyo (1-10-5 Akasaka)",
+   "num": "+81 3 3224 5000"
+  },
+  {
+   "name": "The Tokyo EDITION, Toranomon",
+   "num": "+81 3 5422 1600"
+  },
+  {
+   "name": "EDITION — The Spa (31F)",
+   "num": "+81 3 5422 1640"
+  },
+  {
+   "name": "Delta — US (Platinum line)",
+   "num": "+1 800 221 1212"
+  },
+  {
+   "name": "Delta — Japan reservations",
+   "num": "0570 077 733"
+  },
+  {
+   "name": "Taxi — GO app (Nihon Kotsu); JapanTaxi",
+   "num": "app"
+  },
+  {
+   "name": "Office — Atago Green Hills MORI Tower (2-5-1 Atago) — CONFIRM",
+   "num": "—"
+  },
+  {
+   "name": "Kyubey Ginza (sushi)",
+   "num": "+81 3 3571 6523"
+  },
+  {
+   "name": "Birdland Ginza (yakitori)",
+   "num": "+81 3 5250 1081"
+  },
+  {
+   "name": "Kani Doraku Ginza Hacchome (crab)",
+   "num": "+81 3 3572 7272"
+  }
+ ],
+ "eats": [
+  {
+   "cat": "shortlist",
+   "name": "Kyubey Ginza (久兵衛)",
+   "area": "Ginza 8-chōme",
+   "price": "¥¥¥¥",
+   "known": "The classic Ginza counter since 1935 — reliable, polished, used to foreign guests, and the chefs talk you through each piece. The safe great sushi night, solo or with the team.",
+   "addr": "8-7-6 Ginza, Chuo-ku (main shop)",
+   "phone": "+81 3 3571 6523",
+   "resUrl": null,
+   "closed": "Closed Sun & holidays",
+   "res": "Book through the EDITION concierge 2–3 weeks out; lunch omakase is the value play (~¥10,000–15,000), dinner ¥25,000–40,000. Thursday Dec 17 is the natural slot.",
+   "dir": "🚕 10 min from hotel · 🚇 Hibiya line Kamiyacho → Ginza (6 min) + 5 min walk",
+   "lat": 35.6693,
+   "lng": 139.762
+  },
+  {
+   "cat": "shortlist",
+   "name": "Sushi Yoshitake (鮨よしたけ)",
+   "area": "Ginza 8-chōme",
+   "price": "¥¥¥¥¥",
+   "known": "Two Michelin stars, eight seats, the abalone with liver sauce is the dish people fly for. The splurge option if a solo night opens up.",
+   "addr": "Suzuryu Bldg 3F, 8-7-19 Ginza, Chuo-ku",
+   "phone": "+81 3 6253 7331",
+   "resUrl": null,
+   "closed": "Closed Sun",
+   "res": "Seats release 1–2 months ahead and go through the concierge or a booking service (Pocket Concierge, Tableall). ~¥50,000+. If you want this, say so this week.",
+   "dir": "🚕 10 min from hotel",
+   "lat": 35.6697,
+   "lng": 139.7617
+  },
+  {
+   "cat": "shortlist",
+   "name": "Sushi Kanesaka (鮨かねさか)",
+   "area": "Ginza 8-chōme",
+   "price": "¥¥¥¥¥",
+   "known": "Edomae purist's counter under Shinji Kanesaka — quieter and more traditional than Kyubey, one star.",
+   "addr": "Misuzu Bldg B1F, 8-10-3 Ginza, Chuo-ku",
+   "phone": "+81 3 5568 4411",
+   "resUrl": null,
+   "closed": "Closed Sun & Mon",
+   "res": "Concierge booking, 3–4 weeks out; dinner ¥35,000+, lunch considerably less. Tue–Fri only on this trip.",
+   "dir": "🚕 10 min from hotel",
+   "lat": 35.6688,
+   "lng": 139.7627
+  },
+  {
+   "cat": "shortlist",
+   "name": "Ginza Iwa (銀座 いわ)",
+   "area": "Ginza 8-chōme",
+   "price": "¥¥¥¥",
+   "known": "Seven-seat L-counter, one star, less theatrical than the big names — a very good lunch omakase without the Yoshitake waitlist.",
+   "addr": "8-4-4 Ginza, Chuo-ku, 1F",
+   "phone": null,
+   "resUrl": "https://www.tableall.com/restaurant/349",
+   "closed": "Irregular closures",
+   "res": "Lunch from 12:00 (~¥25,000 via Tableall incl. fee), dinner from 18:00. Good Friday or Saturday lunch candidate.",
+   "dir": "🚕 10 min from hotel",
+   "lat": 35.67,
+   "lng": 139.7615
+  },
+  {
+   "cat": "shortlist",
+   "name": "Birdland Ginza (バードランド)",
+   "area": "Ginza 4-chōme",
+   "price": "¥¥¥",
+   "known": "One-star yakitori next door to Sukiyabashi Jiro — Okukuji shamo chicken, the liver pâté and oyakodon finish are the famous bits. Counter seats, takes groups.",
+   "addr": "Tsukamoto Sozan Bldg B1F, 4-2-15 Ginza, Chuo-ku",
+   "phone": "+81 3 5250 1081",
+   "resUrl": null,
+   "closed": "Closed Sun, Mon & holidays",
+   "res": "Phone only (concierge), ~6 weeks ahead — book now for Tue Dec 15 or Wed Dec 16. Courses ~¥9,700–13,800. Walk-in seats sometimes free up after 20:00 if the booking fails.",
+   "dir": "🚇 Ginza station exit C6, 1 min · 🚕 12 min from hotel",
+   "lat": 35.6727,
+   "lng": 139.7639
+  },
+  {
+   "cat": "shortlist",
+   "name": "Torishige Shimbashi (鳥繁)",
+   "area": "Shimbashi",
+   "price": "¥¥",
+   "known": "Old-school salaryman yakitori a few blocks from the hotel — smoky, loud, cheap, exactly what a team wants after a training day.",
+   "addr": "2-15-15 Shimbashi, Minato-ku (confirm with concierge)",
+   "phone": null,
+   "resUrl": null,
+   "closed": "Closed Sun & holidays",
+   "res": "Concierge phone booking a few days ahead for a group; counter walk-in works for one or two before 18:30.",
+   "dir": "🚶 15 min from hotel, 🚕 6 min",
+   "lat": 35.6672,
+   "lng": 139.758
+  },
+  {
+   "cat": "shortlist",
+   "name": "Kani Doraku Ginza Hacchome (かに道楽)",
+   "area": "Ginza 8-chōme / Shimbashi",
+   "price": "¥¥¥",
+   "known": "The Osaka crab chain's Ginza branch — crab kaiseki courses, ten private rooms, groups to 28. The right answer when the team dinner is crab and someone has to host.",
+   "addr": "Ginza Nine Bldg 2, 2F, 8-chōme Ginza, Chuo-ku (1 min from Shimbashi subway exit 1)",
+   "phone": "+81 3 3572 7272",
+   "resUrl": null,
+   "closed": "Open daily (confirm)",
+   "res": "Concierge books a private room a week ahead; courses ~¥6,000–33,000 pp. Best fit: Wed Dec 16 with the team.",
+   "dir": "🚶 15 min from hotel, 🚕 6 min",
+   "lat": 35.669,
+   "lng": 139.76
+  },
+  {
+   "cat": "lunch",
+   "name": "Toranomon Yokocho",
+   "area": "Toranomon Hills Business Tower 3F",
+   "price": "¥¥",
+   "known": "Twenty-odd counters from well-known Tokyo kitchens under one roof — ramen, sushi, yakiniku, tempura — the easy lunch or late solo dinner.",
+   "addr": "1-17-1 Toranomon, Minato-ku, 3F",
+   "phone": null,
+   "resUrl": null,
+   "closed": "11:00–23:00 (Sun to 21:00)",
+   "res": "No reservation. T-Market in B2 of the same tower for a quick bento or coffee.",
+   "dir": "🚶 8 min from hotel",
+   "lat": 35.6683,
+   "lng": 139.7488
+  },
+  {
+   "cat": "lunch",
+   "name": "Tsukiji Outer Market — standing breakfast",
+   "area": "Tsukiji",
+   "price": "¥",
+   "known": "Tamagoyaki on a stick (Yamachou / Marutake), uni and tuna bowls at the stalls on Namiyoke-dori, grilled scallops, hot amazake. Eat at six places, not one.",
+   "addr": "4-chōme Tsukiji, Chuo-ku",
+   "phone": null,
+   "resUrl": null,
+   "closed": "Many stalls closed Sun & Wed · best 7:00–11:00",
+   "res": "No reservation. Cash still rules at half the stalls — carry ¥10,000 in small notes. Go Monday Dec 14 and again Saturday Dec 19 if Monday is missed.",
+   "dir": "🚕 10–12 min from hotel · 🚇 Hibiya line Kamiyacho → Tsukiji (8 min)",
+   "lat": 35.6654,
+   "lng": 139.7707
+  },
+  {
+   "cat": "dinner",
+   "name": "Yurakucho gado-shita (under the tracks)",
+   "area": "Yurakucho / Shimbashi",
+   "price": "¥¥",
+   "known": "Yakitori and beer under the JR arches — no booking, no English, point at the skewers. The after-dinner-drink or casual night when nobody wants a course.",
+   "addr": "Arches along Yurakucho–Shimbashi, east side of the tracks",
+   "phone": null,
+   "resUrl": null,
+   "closed": "Evenings, most places to 23:00+",
+   "res": "Walk in. Andy's Shin Hinomoto (2-4-4 Yurakucho, under the tracks) is the foreigner-run izakaya with great fish and an English menu if the team wants a loud second stop.",
+   "dir": "🚕 10 min from hotel",
+   "lat": 35.6745,
+   "lng": 139.763
+  },
+  {
+   "cat": "dinner",
+   "name": "Azabudai Hills — dinner after teamLab",
+   "area": "Azabudai Hills, 5 min from hotel",
+   "price": "¥¥–¥¥¥",
+   "known": "Dozens of restaurants in the towers above teamLab Borderless; Azabudai Hills Market in the Garden Plaza has sushi and sake counters for a casual Monday.",
+   "addr": "1-3-1 Azabudai, Minato-ku",
+   "phone": null,
+   "resUrl": null,
+   "closed": "Most to 22:00–23:00",
+   "res": "Walk in for the Market counters; the sit-down rooms take online bookings via TableCheck.",
+   "dir": "🚶 5–7 min from hotel (Kamiyacho exit 5)",
+   "lat": 35.6603,
+   "lng": 139.7404
+  }
+ ],
+ "bookings": [
+  {
+   "text": "Delta BOS→DTW (Sat Dec 12) — First Class",
+   "sub": "BOOKED per James · send me the Delta receipt and I'll ingest times, seats, confirmation code and the ticket number",
+   "done": true
+  },
+  {
+   "text": "DL275 DTW→HND (Sat Dec 12 → arr Sun Dec 13, 5:45 PM) — Delta One suite",
+   "sub": "BOOKED per James · ~13 h · seat, conf and exact departure time pending the receipt · Delta One = Sky Club DTW + lie-flat suite",
+   "done": true
+  },
+  {
+   "text": "DL276 HND→DTW→BOS (Sat Dec 19, 5:30 PM)",
+   "sub": "BOOKED per James · connection and Boston arrival pending the receipt · Delta Sky Club HND is on T3 5F, entry within 3 h of departure",
+   "done": true
+  },
+  {
+   "text": "The Tokyo EDITION, Toranomon — Dec 13–19 (6 nights)",
+   "sub": "BOOKED per James · check-in 15:00, check-out 12:00 · forward the confirmation and I'll add rate, room category and the Marriott conf number",
+   "done": true
+  },
+  {
+   "text": "Visit Japan Web — immigration & customs QR",
+   "sub": "Free, optional, saves the paper forms — register at vjw.digital.go.jp before Dec 12 (passport, flight, hotel address). No visa or JESTA needed for a US passport in Dec 2026.",
+   "done": false
+  },
+  {
+   "text": "Confirm the office address — 2-5-1 Atago (Atago Green Hills MORI Tower)?",
+   "sub": "\"2 Come-on-1 Atago\" reads as 2-chōme-5-1 Atago. If so it is a 10 min walk from the hotel, Kamiyacho exit 3. Confirm with the Japan team and I'll lock the walking route.",
+   "done": false
+  },
+  {
+   "text": "Confirm Friday Dec 18 — work day or open?",
+   "sub": "The guide currently treats Friday as flex. If it is a work day, the Ginza/Omotesando track moves to Saturday morning.",
+   "done": false
+  },
+  {
+   "text": "Birdland Ginza — yakitori, Tue Dec 15 (or Wed 16), ~19:00",
+   "sub": "Phone only, ~6 weeks out — ask the EDITION concierge to call +81 3 5250 1081 now. Closed Sun/Mon. Fallback: Torishige Shimbashi.",
+   "done": false
+  },
+  {
+   "text": "Kani Doraku Ginza Hacchome — crab, private room, Wed Dec 16, ~19:00",
+   "sub": "Via concierge, +81 3 3572 7272, a week ahead; give a headcount from the Japan team. Courses ¥6,000–33,000 pp.",
+   "done": false
+  },
+  {
+   "text": "Kyubey Ginza — sushi, Thu Dec 17, ~19:00",
+   "sub": "Via concierge 2–3 weeks out, +81 3 3571 6523. Closed Sun. If the team prefers to host Thursday, move Kyubey to Friday lunch.",
+   "done": false
+  },
+  {
+   "text": "teamLab Borderless — timed ticket, Mon Dec 14 ~17:00",
+   "sub": "Azabudai Hills, 5 min walk. Buy online (teamlab.art) — dates sell out; ¥3,600–4,800. Check the December closure days before buying.",
+   "done": false
+  },
+  {
+   "text": "The Spa (EDITION 31F) — Mon Dec 14 ~15:00 and Thu Dec 17 late",
+   "sub": "Book both through the concierge on arrival Sunday; ask the same desk about licensed in-room shiatsu for Tuesday or Wednesday night.",
+   "done": false
+  },
+  {
+   "text": "Suica in Apple Wallet + eSIM/roaming",
+   "sub": "Add Suica to Wallet before leaving (Wallet → + → Transit → Suica, fund with Apple Pay). Phone: carrier day pass or an eSIM (Ubigi/Airalo) — set up at home.",
+   "done": false
+  },
+  {
+   "text": "Cash — ¥30,000 from an ATM on arrival",
+   "sub": "7-Eleven ATMs at HND T3 arrivals and on every corner take US cards. Tsukiji stalls and the gado-shita are cash-first.",
+   "done": false
+  }
+ ],
+ "shopping": [
+  {
+   "title": "Japanese kitchen knife — Tsukiji Masamoto or Aritsugu",
+   "where": "Tsukiji Masamoto, 4-9-9 Tsukiji (outer market)",
+   "loc": "tsukiji",
+   "cat": "antiques",
+   "timing": "Mon Dec 14 or Sat Dec 19 morning",
+   "pri": "recommended",
+   "forWho": "Home",
+   "pack": "checked",
+   "tip": "A 210 mm gyuto or 165 mm santoku in carbon or stainless; they engrave on the spot. Must go in the checked bag — wrap it in the box and a sweater.",
+   "bought": false
+  },
+  {
+   "title": "Katsuobushi, kombu & dashi packs",
+   "where": "Tsukiji outer market stalls; Kayanoya for the gift-grade packs",
+   "loc": "tsukiji",
+   "cat": "food",
+   "timing": "Mon Dec 14 morning",
+   "pri": "recommended",
+   "forWho": "Home",
+   "pack": "either",
+   "tip": "Shaved bonito in vacuum packs travels fine. Kayanoya dashi packs (Tokyo Midtown / Nihonbashi Coredo) are the easy gift.",
+   "bought": false
+  },
+  {
+   "title": "Nori — gift-grade sheets",
+   "where": "Tsukiji outer market (Maruyama Nori or any nori specialist)",
+   "loc": "tsukiji",
+   "cat": "food",
+   "timing": "Mon Dec 14 morning",
+   "pri": "nice",
+   "forWho": "Home",
+   "pack": "carry",
+   "tip": "Flat tins or boxed sheets; keep them in carry-on so they do not crush.",
+   "bought": false
+  },
+  {
+   "title": "Matcha — Ippodo Marunouchi",
+   "where": "Ippodo Tea, 3-1-1 Marunouchi (Kokusai Bldg)",
+   "loc": "ginza",
+   "cat": "drinks",
+   "timing": "Fri Dec 18 or Sat Dec 19",
+   "pri": "nice",
+   "forWho": "Bethany / home",
+   "pack": "carry",
+   "tip": "Ummon or Sayaka for drinking; the tins are sealed and light. The shop has a tasting counter.",
+   "bought": false
+  },
+  {
+   "title": "Japanese whisky — duty free",
+   "where": "HND T3 duty free after security",
+   "loc": "hnd",
+   "cat": "drinks",
+   "timing": "Sat Dec 19, 3 PM",
+   "pri": "nice",
+   "forWho": "Home",
+   "pack": "carry",
+   "tip": "Yamazaki and Hibiki 12 are rationed and usually gone; Nikka From the Barrel, Chichibu or a Hakushu NAS are the realistic wins. Sealed duty-free bag is fine through DTW with a connection.",
+   "bought": false
+  },
+  {
+   "title": "KitKat Japan flavours & Tokyo Banana",
+   "where": "Don Quijote (Ginza) or HND T3 departures",
+   "loc": "hnd",
+   "cat": "confectionery",
+   "timing": "Sat Dec 19",
+   "pri": "recommended",
+   "forWho": "Office / kids",
+   "pack": "either",
+   "tip": "Buy the multipacks at the airport — same price, no carrying. Royce Nama chocolate needs a cold pack and is sold at HND too.",
+   "bought": false
+  },
+  {
+   "title": "Toraya yokan or Ginza Kimuraya anpan",
+   "where": "Toraya Ginza / Ginza Kimuraya, 4-5-7 Ginza",
+   "loc": "ginza",
+   "cat": "confectionery",
+   "timing": "Fri Dec 18",
+   "pri": "nice",
+   "forWho": "Bethany",
+   "pack": "carry",
+   "tip": "Toraya's small yokan bars keep for months; Kimuraya's sakura anpan does not — eat those on the plane.",
+   "bought": false
+  },
+  {
+   "title": "Japanese skincare — Hada Labo, Shiseido, Biore UV",
+   "where": "Matsumoto Kiyoshi or any drugstore; Ginza Shiseido for the gift tier",
+   "loc": "ginza",
+   "cat": "skincare",
+   "timing": "Any evening on the way home",
+   "pri": "recommended",
+   "forWho": "Bethany",
+   "pack": "checked",
+   "tip": "Hada Labo Gokujyun lotion, Biore UV Aqua Rich SPF50 (a third of the US price), Shiseido Eudermine. Liquids go checked.",
+   "bought": false
+  },
+  {
+   "title": "Itoya stationery — notebooks, pens, washi",
+   "where": "Itoya, 2-7-15 Ginza (12 floors)",
+   "loc": "ginza",
+   "cat": "antiques",
+   "timing": "Fri Dec 18 or Sat Dec 19",
+   "pri": "nice",
+   "forWho": "Home / gifts",
+   "pack": "carry",
+   "tip": "MD paper notebooks, a Sailor or Pilot pen, washi tape — the Japan-team thank-you gifts can come from here too.",
+   "bought": false
+  },
+  {
+   "title": "Furoshiki & tenugui cloths",
+   "where": "Musubi (Omotesando) or the Itoya/Ginza Six craft floors",
+   "loc": "ginza",
+   "cat": "antiques",
+   "timing": "Fri Dec 18",
+   "pri": "nice",
+   "forWho": "Gifts",
+   "pack": "carry",
+   "tip": "Light, flat, under ¥3,000 — the easiest gifts in the bag.",
+   "bought": false
+  },
+  {
+   "title": "Omiyage for the Japan team — bring FROM Boston",
+   "where": "Before departure",
+   "loc": "hotel",
+   "cat": "confectionery",
+   "timing": "Pack Sat Dec 12",
+   "pri": "essential",
+   "forWho": "Japan partners & associates",
+   "pack": "carry",
+   "tip": "A boxed, individually wrapped Boston sweet (a Beacon Hill chocolate or maple candy) for the office and a nicer one for the partner hosting the dinners. Hand over on Tuesday morning with both hands.",
+   "bought": false
+  }
+ ],
+ "parts": [
+  {
+   "label": "Arrival & Acclimation",
+   "days": [
+    0,
+    1
+   ]
+  },
+  {
+   "label": "Work Week",
+   "days": [
+    2,
+    3,
+    4
+   ]
+  },
+  {
+   "label": "Wind-down & Home",
+   "days": [
+    5,
+    6
+   ]
+  },
+  {
+   "label": "Bookings",
+   "days": []
+  },
+  {
+   "label": "Shopping",
+   "days": []
+  },
+  {
+   "label": "Restaurant Ideas",
+   "days": []
+  },
+  {
+   "label": "Contacts",
+   "days": []
+  },
+  {
+   "label": "At a Glance",
+   "days": []
+  }
+ ],
+ "days": [
+  {
+   "date": "Sun Dec 13",
+   "rain": "Arrival is indoors end to end: Haneda T3 to taxi to the 31st floor. If it is wet, skip the Toranomon walk and eat at the hotel.",
+   "dayNum": 1,
+   "label": "Dec 13",
+   "sub": "Sun",
+   "theme": "Boston → Tokyo",
+   "sub2": "Sat 12 departure · Delta One suite · land Haneda 5:45 PM · hotel by 7",
+   "location": "In the air · Haneda · Toranomon",
+   "note": "Clocks: Tokyo is 14 hours ahead of Boston. You leave Saturday and land Sunday evening. The one job on landing is to stay up until 22:00 local.",
+   "hotel": 0,
+   "sections": [
+    {
+     "time": "IN THE AIR (SAT DEC 12)",
+     "entries": [
+      {
+       "title": "Delta BOS → DTW — First Class",
+       "addr": "Boston Logan Terminal A",
+       "metro": "—",
+       "walk": "—",
+       "tags": [
+        "train"
+       ],
+       "lat": null,
+       "lng": null,
+       "ds": "flightDay",
+       "bk": "BOS→DTW",
+       "lock": "Sat AM",
+       "tips": "<b>Good to know:</b> Platinum + First means Sky Priority at check-in and the DTW Sky Club on the connection. Eat in the lounge, not the plane — the real meal is on the next leg. <b>Bags:</b> check the knife-sized bag through to HND; carry the deck, meds, chargers, a change of shirt.",
+       "note": "Short hop. Hydrate; the clock game starts at DTW."
+      },
+      {
+       "title": "DL275 DTW → HND — Delta One suite, ~13 h",
+       "addr": "Detroit Metro McNamara → Haneda Terminal 3",
+       "metro": "—",
+       "walk": "—",
+       "tags": [
+        "train",
+        "special"
+       ],
+       "lat": null,
+       "lng": null,
+       "ds": "flightNight",
+       "bk": "DL275",
+       "lock": "Sat PM",
+       "tips": "<b>The sleep plan:</b> you land at 17:45 local, so the goal is to arrive tired enough to sleep at 22:00 Tokyo time, not rested. Stay awake for the first meal (2 h), then sleep 5–6 h in the middle, then stay up for the last 4 h — read, watch, work. Set the watch to Tokyo at the door. <b>Paris lesson:</b> the eastbound redeye scored Sleep 2/5 in Comfort+; the suite is the fix, so use the mattress pad and the do-not-disturb and skip the second glass. <b>Rating dims:</b> seat, cabin, sleep, crew, food, worth it.",
+       "note": "The 13 hours that decide whether Monday is useful."
+      }
+     ]
+    },
+    {
+     "time": "EVENING",
+     "entries": [
+      {
+       "title": "Land Haneda T3 — immigration, customs, taxi (5:45 PM)",
+       "addr": "Haneda Airport Terminal 3",
+       "metro": "Taxi stand 2F arrivals · Keikyu/Monorail if no bags",
+       "walk": "—",
+       "tags": [
+        "train"
+       ],
+       "lat": 35.5444,
+       "lng": 139.7676,
+       "tips": "<b>Immigration:</b> Visit Japan Web QR at the joint kiosks, or the paper cards — either is 20–40 min on a Sunday evening. <b>Cash:</b> 7-Eleven ATM in arrivals, take ¥30,000. <b>Taxi:</b> official stand, flat ~¥8,000–10,000 to Toranomon, 25–35 min, cards OK; say \"Tokyo EDITION Toranomon, Kamiyacho Trust Tower\". The train is cheaper but means a change and a walk with bags.",
+       "note": "Be in the taxi by 18:45."
+      },
+      {
+       "addr": "At hotel",
+       "metro": "—",
+       "walk": "At hotel",
+       "tags": [
+        "hotel"
+       ],
+       "lat": null,
+       "lng": null,
+       "title": "Check in — The Tokyo EDITION, Toranomon",
+       "ds": "hotel",
+       "tips": "<b>Arrival list for the concierge (do it tonight):</b> 1) The Spa Monday ~15:00 and Thursday late; 2) in-room shiatsu for Tue or Wed night; 3) call Birdland, Kani Doraku and Kyubey for the three team-dinner dates; 4) teamLab ticket for Monday ~17:00 if not already bought; 5) late check-out Saturday to 14:00. <b>Room:</b> ask for a Tokyo Tower side room high up — the view is the reason to stay here. <b>Paris rule:</b> arrival-night hotel scores are provisional; rate the room Tuesday.",
+       "note": "Unpack fully. Hang the suits. Six nights in one room is a luxury after Paris."
+      },
+      {
+       "title": "Light dinner — Lobby Bar 31F or Toranomon Yokocho",
+       "addr": "At hotel / Toranomon Hills Business Tower 3F",
+       "metro": "—",
+       "walk": "At hotel, or 8 min walk",
+       "tags": [
+        "food"
+       ],
+       "lat": 35.6683,
+       "lng": 139.7488,
+       "tips": "<b>Hotel:</b> the Lobby Bar does small plates with the Tokyo Tower lit up — the easy answer at 20:00 after a 13-hour flight. <b>If you want air:</b> Toranomon Yokocho is open to 21:00 on Sundays — a bowl of ramen or a few sushi pieces at a counter and back in 50 minutes.",
+       "note": "Eat something warm, no big meal, in bed by 22:00 with the curtains set to open at 6."
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "date": "Mon Dec 14",
+   "rain": "Tsukiji's stalls have awnings and the walking is short — go anyway, but swap Hamarikyu for the Nakajima teahouse only. teamLab and the spa are indoors. Carry the hotel umbrella.",
+   "dayNum": 2,
+   "label": "Dec 14",
+   "sub": "Mon",
+   "theme": "Acclimation — Tsukiji, the garden, the spa, teamLab",
+   "sub2": "Early market breakfast · Hamarikyu matcha · rest · spa 3 PM · teamLab 5 PM · early bed",
+   "location": "Tsukiji · Hamarikyu · Toranomon · Azabudai",
+   "note": "The day is built around jet lag, not against it: use the 5 AM wake for the market, protect a real rest after lunch, and keep the evening short so Tuesday starts sharp.",
+   "hotel": 0,
+   "sections": [
+    {
+     "time": "EARLY MORNING",
+     "entries": [
+      {
+       "title": "Tsukiji Outer Market — breakfast on foot (7:30)",
+       "addr": "4-chōme Tsukiji, Chuo-ku",
+       "metro": "Hibiya line Kamiyacho → Tsukiji (8 min), exit 1",
+       "walk": "Taxi 10–12 min from hotel, ¥1,500",
+       "tags": [
+        "food",
+        "special"
+       ],
+       "lat": 35.6654,
+       "lng": 139.7707,
+       "tips": "<b>The circuit (90 min):</b> start on Namiyoke-dori by the Namiyoke shrine — tamagoyaki on a stick at Yamachou or Marutake, a tuna or uni bowl at a stall counter, grilled scallop with butter, hot amazake. Push into the covered lanes of Tsukiji Uogashi (the 3-storey market building) for the knife shop and the dried-goods stalls. <b>Monday is a good day</b> — Sunday and Wednesday are the closure days. Best 7:00–10:30, mobbed by 11. <b>Cash:</b> half the stalls. <b>Shopping:</b> this is where the knife, katsuobushi and nori get bought — see the Shopping tab.",
+       "note": "You will be awake at 5 anyway. This is the best use of it on the whole trip."
+      }
+     ]
+    },
+    {
+     "time": "MORNING",
+     "entries": [
+      {
+       "title": "Hamarikyu Gardens — matcha at Nakajima-no-ochaya",
+       "addr": "1-1 Hamarikyu-teien, Chuo-ku",
+       "metro": "Shiodome / Tsukijishijo",
+       "walk": "10 min walk from Tsukiji (Otemon gate)",
+       "tags": [
+        "walk",
+        "special"
+       ],
+       "lat": 35.6597,
+       "lng": 139.7634,
+       "tips": "<b>Hours:</b> 9:00–17:00, ¥300. The teahouse on the pond does matcha and a seasonal sweet (~¥1,000), last orders 16:30. December is the quiet season — the pines are wrapped in straw and the skyline sits behind the tidal pond. <b>Paris lesson:</b> this is a rest-garden, not a scheduled park — give it 45 minutes and leave when you have had enough. <b>Back:</b> taxi from the Otemon gate to the hotel, 10 min.",
+       "note": "The decompression stop. Sit with the tea and do nothing for twenty minutes."
+      },
+      {
+       "addr": "At hotel",
+       "metro": "—",
+       "walk": "At hotel",
+       "tags": [
+        "hotel"
+       ],
+       "lat": null,
+       "lng": null,
+       "title": "Back to the hotel — rest, not sleep (11:00–14:00)",
+       "tips": "<b>The jet-lag rule:</b> a nap of 60–90 minutes, alarm set, curtains open, before 14:00. Longer than that and Tuesday is lost. Use the rest of the window for email with Boston (it is Sunday evening there) and a run-through of Tuesday's deck.",
+       "note": "Guarded time. Nothing goes in here."
+      }
+     ]
+    },
+    {
+     "time": "AFTERNOON",
+     "entries": [
+      {
+       "addr": "Atago Green Hills MORI Tower, 2-5-1 Atago, Minato-ku (confirm)",
+       "metro": "Kamiyacho (Hibiya) exit 3, 4 min",
+       "walk": "~10 min walk from hotel",
+       "tags": [
+        "landmark"
+       ],
+       "lat": 35.6648,
+       "lng": 139.7485,
+       "title": "Scout the office walk + Atago Shrine steps (2:00 PM)",
+       "tips": "<b>Why:</b> walking the route today means Tuesday morning is automatic. Ten minutes along Sakurada-dori to the Atago hill. <b>Atago Shrine:</b> next to the tower, the 86-step <i>Shusse no Ishidan</i> — the \"stairs of success\" — is the one tourist thing on this block and a good omen to start a training week on. Top of the hill is the highest natural point in central Tokyo. <b>Confirm the address</b> before relying on this card.",
+       "note": "Twenty minutes, then back for the spa."
+      },
+      {
+       "addr": "At hotel",
+       "metro": "—",
+       "walk": "At hotel",
+       "tags": [
+        "spa",
+        "special"
+       ],
+       "lat": null,
+       "lng": null,
+       "title": "The Spa — EDITION 31F (3:00 PM)",
+       "ds": "spa",
+       "bk": "The Spa",
+       "pend": "3:00 PM",
+       "tips": "<b>Book via the concierge Sunday night.</b> 60 or 90 min; shiatsu-based deep tissue is the right call after 13 hours in a seat. Hours 10:00–22:00. <b>Also available:</b> licensed in-room shiatsu through the same desk, typically 60/90 min — the better option on a work night when you do not want to leave the room. <b>Alternative:</b> Hotel Okura Tokyo's spa, 5 min walk, if the EDITION is full.",
+       "note": "Massage one of two. Rate it: therapist, room, effect next morning."
+      }
+     ]
+    },
+    {
+     "time": "EVENING",
+     "entries": [
+      {
+       "title": "teamLab Borderless — Azabudai Hills (5:00 PM slot)",
+       "addr": "Azabudai Hills Garden Plaza B, 1-2-4 Azabudai, Minato-ku",
+       "metro": "Kamiyacho exit 5, 2–4 min",
+       "walk": "5–7 min walk from hotel",
+       "tags": [
+        "museum",
+        "special"
+       ],
+       "bk": "teamLab",
+       "pend": "5:00 PM",
+       "lat": 35.6603,
+       "lng": 139.7404,
+       "tips": "<b>Tickets:</b> timed entry, buy online now (¥3,600–4,800); evening slots are calmer than afternoons. Allow 2–2.5 hours; there is no map, so follow the light. Wear flat shoes — some rooms have mirrored floors. <b>Paris lesson:</b> the immersive, experiential thing scored 5s every time in Paris; this is the Tokyo version and the one culture stop that fits a business week.",
+       "note": "The one sight on the trip chosen for James rather than for the job."
+      },
+      {
+       "title": "Dinner — Azabudai Hills Market counters",
+       "addr": "Azabudai Hills Garden Plaza, 1-3-1 Azabudai",
+       "metro": "—",
+       "walk": "Same complex as teamLab",
+       "tags": [
+        "food"
+       ],
+       "lat": 35.6603,
+       "lng": 139.7404,
+       "tips": "<b>Easy:</b> sushi and sake counters in the Market, or a sit-down room in the towers (TableCheck). Keep it to an hour. <b>Back:</b> 7 minutes on foot, uphill.",
+       "note": "Done by 21:00, in bed by 22:00. The training week starts at 9."
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "date": "Tue Dec 15",
+   "rain": "A work day is rain-proof: the walk to Atago is ten minutes and an umbrella is at the hotel door. The only exposed piece is the walk from the restaurant to a taxi.",
+   "dayNum": 3,
+   "label": "Dec 15",
+   "sub": "Tue",
+   "theme": "Work day 1 — training + yakitori",
+   "sub2": "Sessions 9:30–17:30 · 1:1s · team dinner Ginza · nightcap",
+   "location": "Toranomon · Atago · Ginza",
+   "note": "Omiyage from Boston goes to the hosts first thing, with both hands. Business cards: receive with both hands, read it, put it on the table, not in a pocket.",
+   "hotel": 0,
+   "sections": [
+    {
+     "time": "EARLY MORNING",
+     "entries": [
+      {
+       "title": "Breakfast — The Blue Room (hotel)",
+       "addr": "At hotel",
+       "metro": "—",
+       "walk": "At hotel",
+       "tags": [
+        "food",
+        "hotel"
+       ],
+       "lat": null,
+       "lng": null,
+       "tips": "<b>Hours:</b> 7:00–10:30. Eat protein, skip the pastry — the day is talking, not walking. Coffee to go from the lobby if the session starts early.",
+       "note": "Jet lag will have you up at 5. Use it: notes for the day, then eat at 7."
+      }
+     ]
+    },
+    {
+     "time": "MORNING",
+     "entries": [
+      {
+       "addr": "Atago Green Hills MORI Tower, 2-5-1 Atago, Minato-ku (confirm)",
+       "metro": "Kamiyacho (Hibiya) exit 3, 4 min",
+       "walk": "~10 min walk from hotel",
+       "tags": [
+        "landmark"
+       ],
+       "lat": 35.6648,
+       "lng": 139.7485,
+       "title": "Walk to the office — Atago (9:00)",
+       "tips": "<b>Route:</b> Out the Kamiyacho side, east along Sakurada-dori, right at the Atago hill — ten minutes, flat until the last block. <b>Confirm the building:</b> I read \"2 Come-on-1 Atago\" as 2-chōme-5-1, which is Atago Green Hills MORI Tower. Once the Japan team confirms, this card gets the lobby floor and the reception routine.",
+       "note": "Arrive 10 minutes early; Japanese offices run on it."
+      },
+      {
+       "title": "AI training sessions & 1:1s",
+       "addr": "Office",
+       "metro": "—",
+       "walk": "—",
+       "tags": [
+        "landmark",
+        "special"
+       ],
+       "lat": null,
+       "lng": null,
+       "tips": "<b>Working notes:</b> Keep the deck in the hotel-safe copy too. Sessions run 9:30–17:30 with the group lunch likely in a building restaurant — let the hosts choose. 1:1s after 16:00 are where the real questions come; leave the last hour unscripted.",
+       "note": "What and how to sell, and how delivery changes with AI — the thread through all three days."
+      }
+     ]
+    },
+    {
+     "time": "AFTERNOON",
+     "entries": [
+      {
+       "title": "Lunch — with the team (host's pick)",
+       "addr": "Near the office",
+       "metro": "—",
+       "walk": "—",
+       "tags": [
+        "food"
+       ],
+       "lat": null,
+       "lng": null,
+       "tips": "<b>If you are on your own:</b> Toranomon Yokocho is 8 min (twenty counters, 11:00–23:00); the Atago Green Hills Forest Tower has a soba and a tonkatsu room. Lunch sets are ¥1,200–2,000 and fast.",
+       "note": "Let the hosts pick — it is their turf and their chance to show you something."
+      }
+     ]
+    },
+    {
+     "time": "EVENING",
+     "entries": [
+      {
+       "title": "Team dinner — yakitori: Birdland Ginza (or Torishige)",
+       "ds": "table",
+       "addr": "Tsukamoto Sozan Bldg B1F, 4-2-15 Ginza",
+       "metro": "Ginza (exit C6) 1 min · taxi from office 12 min",
+       "walk": "Taxi with the team",
+       "tags": [
+        "dinner",
+        "special"
+       ],
+       "bk": "Birdland",
+       "pend": "7:00 PM",
+       "lat": 35.6727,
+       "lng": 139.7639,
+       "tips": "<b>If Birdland books:</b> omakase course ~¥10,000–14,000 pp, counter and small tables, closed Sun/Mon. <b>Fallback:</b> Torishige in Shimbashi — louder, cheaper, 6 min by taxi, concierge can hold a table. <b>Hosting note:</b> if the Japan partners insist on hosting, accept; the restaurant choice is theirs that night and this card becomes the backup.",
+       "note": "Yakitori is the easiest team format — shared skewers, beer, no courses to time."
+      },
+      {
+       "title": "Nightcap — Gold Bar or Lobby Bar (hotel)",
+       "addr": "At hotel",
+       "metro": "—",
+       "walk": "At hotel",
+       "tags": [
+        "hotel"
+       ],
+       "lat": null,
+       "lng": null,
+       "tips": "<b>Good to know:</b> Gold Bar at EDITION is the glossy one (to 1:00, DJ later in the week); the Lobby Bar on 31F is the quiet one with the Tokyo Tower view. One drink, then the room — the next session is at 9:30.",
+       "note": "Decompress, log the day in the app, bed by 23:30."
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "date": "Wed Dec 16",
+   "rain": "A work day is rain-proof: the walk to Atago is ten minutes and an umbrella is at the hotel door. The only exposed piece is the walk from the restaurant to a taxi.",
+   "dayNum": 4,
+   "label": "Dec 16",
+   "sub": "Wed",
+   "theme": "Work day 2 — training + crab",
+   "sub2": "Sessions · 1:1s · private-room crab dinner with the team",
+   "location": "Toranomon · Atago · Ginza",
+   "note": "Mid-week check: Thursday's sushi table and Saturday's late check-out should both be confirmed by tonight. Tsukiji is mostly closed on Wednesdays, so no early-market detour today.",
+   "hotel": 0,
+   "sections": [
+    {
+     "time": "EARLY MORNING",
+     "entries": [
+      {
+       "title": "Breakfast — The Blue Room (hotel)",
+       "addr": "At hotel",
+       "metro": "—",
+       "walk": "At hotel",
+       "tags": [
+        "food",
+        "hotel"
+       ],
+       "lat": null,
+       "lng": null,
+       "tips": "<b>Hours:</b> 7:00–10:30. Eat protein, skip the pastry — the day is talking, not walking. Coffee to go from the lobby if the session starts early.",
+       "note": "Jet lag will have you up at 5. Use it: notes for the day, then eat at 7."
+      }
+     ]
+    },
+    {
+     "time": "MORNING",
+     "entries": [
+      {
+       "addr": "Atago Green Hills MORI Tower, 2-5-1 Atago, Minato-ku (confirm)",
+       "metro": "Kamiyacho (Hibiya) exit 3, 4 min",
+       "walk": "~10 min walk from hotel",
+       "tags": [
+        "landmark"
+       ],
+       "lat": 35.6648,
+       "lng": 139.7485,
+       "title": "Walk to the office — Atago (9:00)",
+       "tips": "<b>Route:</b> Out the Kamiyacho side, east along Sakurada-dori, right at the Atago hill — ten minutes, flat until the last block. <b>Confirm the building:</b> I read \"2 Come-on-1 Atago\" as 2-chōme-5-1, which is Atago Green Hills MORI Tower. Once the Japan team confirms, this card gets the lobby floor and the reception routine.",
+       "note": "Arrive 10 minutes early; Japanese offices run on it."
+      },
+      {
+       "title": "AI training sessions & 1:1s",
+       "addr": "Office",
+       "metro": "—",
+       "walk": "—",
+       "tags": [
+        "landmark",
+        "special"
+       ],
+       "lat": null,
+       "lng": null,
+       "tips": "<b>Working notes:</b> Keep the deck in the hotel-safe copy too. Sessions run 9:30–17:30 with the group lunch likely in a building restaurant — let the hosts choose. 1:1s after 16:00 are where the real questions come; leave the last hour unscripted.",
+       "note": "What and how to sell, and how delivery changes with AI — the thread through all three days."
+      }
+     ]
+    },
+    {
+     "time": "AFTERNOON",
+     "entries": [
+      {
+       "title": "Lunch — with the team (host's pick)",
+       "addr": "Near the office",
+       "metro": "—",
+       "walk": "—",
+       "tags": [
+        "food"
+       ],
+       "lat": null,
+       "lng": null,
+       "tips": "<b>If you are on your own:</b> Toranomon Yokocho is 8 min (twenty counters, 11:00–23:00); the Atago Green Hills Forest Tower has a soba and a tonkatsu room. Lunch sets are ¥1,200–2,000 and fast.",
+       "note": "Let the hosts pick — it is their turf and their chance to show you something."
+      }
+     ]
+    },
+    {
+     "time": "EVENING",
+     "entries": [
+      {
+       "title": "Team dinner — crab: Kani Doraku Ginza Hacchome (private room)",
+       "ds": "table",
+       "addr": "Ginza Nine Bldg 2, 2F, 8-chōme Ginza",
+       "metro": "Shimbashi subway exit 1, 1 min · taxi from office 8 min",
+       "walk": "Taxi with the team",
+       "tags": [
+        "dinner",
+        "special"
+       ],
+       "bk": "Kani Doraku",
+       "pend": "7:00 PM",
+       "lat": 35.669,
+       "lng": 139.76,
+       "tips": "<b>The format:</b> crab kaiseki courses (sashimi, grilled, shabu, rice) ¥6,000–33,000 pp; ten private rooms, which makes it the right night for the larger group and for toasting. <b>Alternatives if they want a quieter crab room:</b> Ginza Kanimitsu or Kani Jenne — concierge knows both.",
+       "note": "The crab night. Private room, the whole team, say thank you properly."
+      },
+      {
+       "title": "Nightcap — Gold Bar or Lobby Bar (hotel)",
+       "addr": "At hotel",
+       "metro": "—",
+       "walk": "At hotel",
+       "tags": [
+        "hotel"
+       ],
+       "lat": null,
+       "lng": null,
+       "tips": "<b>Good to know:</b> Gold Bar at EDITION is the glossy one (to 1:00, DJ later in the week); the Lobby Bar on 31F is the quiet one with the Tokyo Tower view. One drink, then the room — the next session is at 9:30.",
+       "note": "Decompress, log the day in the app, bed by 23:30."
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "date": "Thu Dec 17",
+   "rain": "A work day is rain-proof: the walk to Atago is ten minutes and an umbrella is at the hotel door. The only exposed piece is the walk from the restaurant to a taxi.",
+   "dayNum": 5,
+   "label": "Dec 17",
+   "sub": "Thu",
+   "theme": "Work day 3 — training + sushi",
+   "sub2": "Last sessions · thank-yous · Kyubey · spa or in-room shiatsu late",
+   "location": "Toranomon · Atago · Ginza",
+   "note": "Close the week properly: the last 1:1s are the ones people remember. Bring the Itoya or furoshiki thank-yous if you bought them, or send them Friday.",
+   "hotel": 0,
+   "sections": [
+    {
+     "time": "EARLY MORNING",
+     "entries": [
+      {
+       "title": "Breakfast — The Blue Room (hotel)",
+       "addr": "At hotel",
+       "metro": "—",
+       "walk": "At hotel",
+       "tags": [
+        "food",
+        "hotel"
+       ],
+       "lat": null,
+       "lng": null,
+       "tips": "<b>Hours:</b> 7:00–10:30. Eat protein, skip the pastry — the day is talking, not walking. Coffee to go from the lobby if the session starts early.",
+       "note": "Jet lag will have you up at 5. Use it: notes for the day, then eat at 7."
+      }
+     ]
+    },
+    {
+     "time": "MORNING",
+     "entries": [
+      {
+       "addr": "Atago Green Hills MORI Tower, 2-5-1 Atago, Minato-ku (confirm)",
+       "metro": "Kamiyacho (Hibiya) exit 3, 4 min",
+       "walk": "~10 min walk from hotel",
+       "tags": [
+        "landmark"
+       ],
+       "lat": 35.6648,
+       "lng": 139.7485,
+       "title": "Walk to the office — Atago (9:00)",
+       "tips": "<b>Route:</b> Out the Kamiyacho side, east along Sakurada-dori, right at the Atago hill — ten minutes, flat until the last block. <b>Confirm the building:</b> I read \"2 Come-on-1 Atago\" as 2-chōme-5-1, which is Atago Green Hills MORI Tower. Once the Japan team confirms, this card gets the lobby floor and the reception routine.",
+       "note": "Arrive 10 minutes early; Japanese offices run on it."
+      },
+      {
+       "title": "AI training sessions & 1:1s",
+       "addr": "Office",
+       "metro": "—",
+       "walk": "—",
+       "tags": [
+        "landmark",
+        "special"
+       ],
+       "lat": null,
+       "lng": null,
+       "tips": "<b>Working notes:</b> Keep the deck in the hotel-safe copy too. Sessions run 9:30–17:30 with the group lunch likely in a building restaurant — let the hosts choose. 1:1s after 16:00 are where the real questions come; leave the last hour unscripted.",
+       "note": "What and how to sell, and how delivery changes with AI — the thread through all three days."
+      }
+     ]
+    },
+    {
+     "time": "AFTERNOON",
+     "entries": [
+      {
+       "title": "Lunch — with the team (host's pick)",
+       "addr": "Near the office",
+       "metro": "—",
+       "walk": "—",
+       "tags": [
+        "food"
+       ],
+       "lat": null,
+       "lng": null,
+       "tips": "<b>If you are on your own:</b> Toranomon Yokocho is 8 min (twenty counters, 11:00–23:00); the Atago Green Hills Forest Tower has a soba and a tonkatsu room. Lunch sets are ¥1,200–2,000 and fast.",
+       "note": "Let the hosts pick — it is their turf and their chance to show you something."
+      }
+     ]
+    },
+    {
+     "time": "EVENING",
+     "entries": [
+      {
+       "title": "Dinner — sushi: Kyubey Ginza",
+       "ds": "restaurant",
+       "addr": "8-7-6 Ginza, Chuo-ku",
+       "metro": "Ginza / Shimbashi, 5 min · taxi from office 10 min",
+       "walk": "Taxi",
+       "tags": [
+        "dinner",
+        "special"
+       ],
+       "bk": "Kyubey",
+       "pend": "7:00 PM",
+       "lat": 35.6693,
+       "lng": 139.762,
+       "tips": "<b>The plan:</b> counter omakase, ¥25,000–40,000, chefs in English, closed Sun. Works solo or for a small group of the partners you most want an hour with. <b>If the team hosts Thursday:</b> keep this and move it to Friday lunch (~¥10,000–15,000 at lunch).",
+       "note": "The sushi night. If Yoshitake or Kanesaka came through instead, this is the one that gets cancelled."
+      },
+      {
+       "title": "Nightcap — Gold Bar or Lobby Bar (hotel)",
+       "addr": "At hotel",
+       "metro": "—",
+       "walk": "At hotel",
+       "tags": [
+        "hotel"
+       ],
+       "lat": null,
+       "lng": null,
+       "tips": "<b>Good to know:</b> Gold Bar at EDITION is the glossy one (to 1:00, DJ later in the week); the Lobby Bar on 31F is the quiet one with the Tokyo Tower view. One drink, then the room — the next session is at 9:30.",
+       "note": "Decompress, log the day in the app, bed by 23:30."
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "date": "Fri Dec 18",
+   "rain": "Ginza is arcade and department-store country — Itoya, Ginza Six, Mitsukoshi and the Marunouchi Ippodo are all indoors. Meiji Jingu is the piece to drop if it pours.",
+   "dayNum": 6,
+   "label": "Dec 18",
+   "sub": "Fri",
+   "theme": "Flex day — confirm: work or open?",
+   "sub2": "If open: Meiji Jingu early · Omotesando · Ginza lunch sushi · Itoya · evening massage",
+   "location": "Harajuku · Omotesando · Ginza",
+   "note": "CONFIRM: James has not said whether Friday is a work day. This plan assumes it is open. If it is a work day, the Ginza/Omotesando track collapses into Saturday morning and Friday becomes a fourth work-day card.",
+   "hotel": 0,
+   "sections": [
+    {
+     "time": "MORNING",
+     "entries": [
+      {
+       "title": "Meiji Jingu — early, before the crowds (8:00)",
+       "addr": "1-1 Yoyogi-Kamizonocho, Shibuya-ku",
+       "metro": "Hibiya line Kamiyacho → Hibiya → Chiyoda to Meiji-jingumae (25 min)",
+       "walk": "Taxi 20 min, ~¥3,000",
+       "tags": [
+        "landmark",
+        "walk"
+       ],
+       "lat": 35.6764,
+       "lng": 139.6993,
+       "tips": "<b>Why early:</b> the gates open at sunrise (~6:45 in December) and the gravel avenue through the forest is empty until 9. Forty minutes, the sake barrels, the main hall, out the Harajuku side. <b>Paris lesson:</b> churches scored 2/5 and 3/5 — this is a forest walk with a shrine at the end, which is a different thing. Skip if it does not appeal.",
+       "note": "The one quiet, old thing in a week of towers."
+      },
+      {
+       "title": "Omotesando — coffee and the walk down to Aoyama",
+       "addr": "Omotesando, Shibuya-ku",
+       "metro": "Meiji-jingumae / Omotesando",
+       "walk": "From Meiji Jingu's Harajuku gate, 5 min",
+       "tags": [
+        "walk",
+        "shop"
+       ],
+       "lat": 35.6652,
+       "lng": 139.712,
+       "tips": "<b>Coffee:</b> Koffee Mameya (4-15-3 Jingumae) for beans and a pour-over, or Blue Bottle Aoyama. <b>Walk:</b> the zelkova avenue, Prada's glass box, the Nezu Museum garden (¥1,500, closed Mon) if you want twenty minutes of bamboo. <b>Shopping:</b> Musubi for furoshiki is on the back streets here.",
+       "note": "Named targets, not browsing — Paris showed browsing retail scores 1s and 2s."
+      }
+     ]
+    },
+    {
+     "time": "AFTERNOON",
+     "entries": [
+      {
+       "title": "Lunch — Ginza Iwa (or Kyubey lunch omakase) 12:00",
+       "ds": "restaurant",
+       "addr": "8-4-4 Ginza, Chuo-ku",
+       "metro": "Omotesando → Ginza (Ginza line, 15 min)",
+       "walk": "Taxi 15 min",
+       "tags": [
+        "food",
+        "special"
+       ],
+       "lat": 35.67,
+       "lng": 139.7615,
+       "tips": "<b>Lunch is the sushi value play:</b> Ginza Iwa ~¥25,000 via Tableall, seven seats; Kyubey lunch ¥10,000–15,000 through the concierge. If Thursday's Kyubey dinner moved here, this is that booking.",
+       "note": "Second sushi of the week, at lunch prices."
+      },
+      {
+       "title": "Itoya + Ginza shopping hour",
+       "addr": "Itoya, 2-7-15 Ginza · Ginza Six, 6-10-1 Ginza",
+       "metro": "Ginza-itchome / Ginza",
+       "walk": "5 min from lunch",
+       "tags": [
+        "shop"
+       ],
+       "lat": 35.6722,
+       "lng": 139.7661,
+       "tips": "<b>Targets only:</b> Itoya (12 floors of paper and pens; gifts for the team and home), Ginza Six's basement for Toraya yokan, a drugstore for Bethany's skincare list. One hour, then stop — see the Shopping tab for the list.",
+       "note": "Get in, get the list, get out."
+      },
+      {
+       "title": "Ippodo Marunouchi — matcha tins (optional)",
+       "addr": "3-1-1 Marunouchi, Kokusai Bldg 1F",
+       "metro": "Hibiya / Yurakucho",
+       "walk": "12 min walk from Ginza",
+       "tags": [
+        "shop"
+       ],
+       "lat": 35.6763,
+       "lng": 139.762,
+       "tips": "<b>Good to know:</b> the Kyoto tea house's Tokyo shop, tasting counter, sealed tins. Twenty minutes.",
+       "note": "Only if the Ginza hour left energy."
+      }
+     ]
+    },
+    {
+     "time": "EVENING",
+     "entries": [
+      {
+       "addr": "At hotel",
+       "metro": "—",
+       "walk": "At hotel",
+       "tags": [
+        "spa",
+        "special"
+       ],
+       "lat": null,
+       "lng": null,
+       "title": "In-room shiatsu or The Spa (6:00 PM)",
+       "ds": "spa",
+       "tips": "<b>Massage two of two.</b> Whichever you did not do Monday: in-room licensed shiatsu through the concierge (60/90 min) or the 31F spa. Book Sunday night; Friday evenings fill.",
+       "note": "The reward for the week."
+      },
+      {
+       "title": "Dinner — gado-shita yakitori under the Yurakucho tracks, or Torishige",
+       "addr": "Under the JR arches, Yurakucho–Shimbashi",
+       "metro": "Yurakucho / Shimbashi",
+       "walk": "Taxi 10 min",
+       "tags": [
+        "dinner"
+       ],
+       "lat": 35.6745,
+       "lng": 139.763,
+       "tips": "<b>The casual night:</b> no booking, point at skewers, a beer, done in an hour. Andy's Shin Hinomoto (2-4-4 Yurakucho) if you want fish and an English menu. <b>Or:</b> stay in and order the Lobby Bar small plates after the massage.",
+       "note": "Low-stakes last proper evening. Pack before bed."
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "date": "Sat Dec 19",
+   "rain": "Tsukiji under awnings is fine in the rain; if it is heavy, sleep in, do the Blue Room breakfast, and go straight to the airport at 13:30.",
+   "dayNum": 7,
+   "label": "Dec 19",
+   "sub": "Sat",
+   "theme": "Last morning — Tsukiji round two, then Haneda",
+   "sub2": "Market or breakfast · check-out 12 (late 14:00 asked) · taxi 14:00 · DL 5:30 PM",
+   "location": "Tsukiji · Toranomon · Haneda",
+   "note": "Saturday is Tsukiji's busiest day — go at 7:30 or not at all. The 17:30 departure means leaving the hotel by 14:00: Haneda T3 is 25–35 minutes, Delta One check-in and the Sky Club (T3, 5F) want two hours.",
+   "hotel": 0,
+   "sections": [
+    {
+     "time": "EARLY MORNING",
+     "entries": [
+      {
+       "title": "Tsukiji Outer Market — round two (7:30)",
+       "addr": "4-chōme Tsukiji, Chuo-ku",
+       "metro": "Hibiya line Kamiyacho → Tsukiji (8 min)",
+       "walk": "Taxi 10–12 min",
+       "tags": [
+        "food"
+       ],
+       "lat": 35.6654,
+       "lng": 139.7707,
+       "tips": "<b>If Monday happened:</b> go back for whatever was best and for the things not bought — the knife, the nori, the katsuobushi. <b>If Monday was missed:</b> this is the market morning; see the Monday card for the circuit. <b>Saturday caveat:</b> crowds from 9:30 — be gone by 10.",
+       "note": "Last cash spent here."
+      }
+     ]
+    },
+    {
+     "time": "MORNING",
+     "entries": [
+      {
+       "addr": "At hotel",
+       "metro": "—",
+       "walk": "At hotel",
+       "tags": [
+        "hotel"
+       ],
+       "lat": null,
+       "lng": null,
+       "title": "Pack, final log, check-out (by 12:00, or 14:00 if granted)",
+       "tips": "<b>Checklist:</b> knife in the checked bag; liquids (skincare, sake) checked; tea, sweets, paper in carry-on; passport, the Delta app boarding pass, ¥ for the taxi. Settle the spa and bar on the folio. <b>Rate the hotel now</b> — six nights is enough to score every dimension.",
+       "note": "Rate the week in the app before the taxi — the airport is too late."
+      },
+      {
+       "title": "Lunch — Toranomon Yokocho (12:00) or the Blue Room",
+       "addr": "Toranomon Hills Business Tower 3F",
+       "metro": "—",
+       "walk": "8 min from hotel",
+       "tags": [
+        "food"
+       ],
+       "lat": 35.6683,
+       "lng": 139.7488,
+       "tips": "<b>Easy last bowl:</b> ramen or a tempura set at the yokocho, 40 minutes. Or lunch at the hotel 12:00–16:00 if the bags are already in the lobby.",
+       "note": "Light. Delta One feeds you twice."
+      }
+     ]
+    },
+    {
+     "time": "DEPARTURE",
+     "entries": [
+      {
+       "title": "Taxi to Haneda T3 (2:00 PM)",
+       "addr": "Haneda Airport Terminal 3, departures 3F",
+       "metro": "Hibiya line → Keikyu alternative, 40 min",
+       "walk": "—",
+       "tags": [
+        "train"
+       ],
+       "lat": 35.5444,
+       "lng": 139.7676,
+       "tips": "<b>Concierge books the taxi</b> for 14:00 — 25–35 min, ~¥8,000–10,000. <b>At T3:</b> Delta One / Sky Priority counters, then the Delta Sky Club on 5F (opens for you within 3 h of departure). Duty free after security for the whisky and KitKats.",
+       "note": "Buffer is generous on purpose."
+      },
+      {
+       "title": "DL276 HND → DTW → BOS (5:30 PM) — Delta One suite",
+       "addr": "Haneda Terminal 3",
+       "metro": "—",
+       "walk": "—",
+       "tags": [
+        "train",
+        "special"
+       ],
+       "lat": null,
+       "lng": null,
+       "ds": "flightNight",
+       "bk": "DL276",
+       "lock": "5:30 PM",
+       "tips": "<b>The sleep plan, eastbound:</b> you land in Detroit the same Saturday afternoon local time and lose the day twice. Eat the first meal, sleep as much as the suite allows in the middle (this is the leg to try the 90-minute wind-down: no screen, mask, the pad), then stay awake from DTW to Boston and go to bed at Boston time. <b>Connection:</b> DTW Sky Club, then the short hop — details from the receipt.",
+       "note": "Last card. Rate the suite honestly against the outbound."
+      }
+     ]
+    }
+   ]
+  }
+ ]
+};
+
+let activePart = 7; // land on At a Glance
+let activeDay = 0;
+let expandedEntries = {};
+
+/* --- Trip memory state ---------------------------------------------------
+   MEM holds ratings/impressions keyed by "<day date>|<entry title>" (stable
+   across card reordering, unlike positional indices). localStorage is a CRASH
+   BUFFER ONLY so a tab reload never loses an evening: the committed values in
+   TRIP remain the record of truth, exactly as CLAUDE.md requires. COMMITTED is
+   the snapshot seeded from TRIP at load, used to show what is not yet synced. */
+/* Named rating dimensions. Entries reference a set with ds:"restaurant"; an
+   entry can still override with its own dims:[...]. Six is the working cap —
+   each one is two star rows on a phone. */
+const DIM_SETS = {
+  flightNight: ['Seat comfort','Cabin comfort & quiet','Sleep quality','Crew attentiveness','Food & drink','Worth the suite?'],
+  flightDay:   ['Seat comfort','Cabin comfort & quiet','Crew attentiveness','Food & drink','Worth the suite?'],
+  hotel:       ['Room & bed','Bathroom','Quiet','Staff','Breakfast','Would I stay again?'],
+  restaurant:  ['Food','Drink','Counter & room','Service','Sense of place','Would I return?'],
+  table:       ['Food','Drink','The table (company)','Setting','Host-worthy?','Would I do it again?'],
+  spa:         ['Therapist','Room & quiet','Effect next morning','Value','Would I rebook?'],
+  transit:     ['Cleanliness','Ease of use','Would I ride again?'],
+  bikeshare:   ['Ease of reserving','Ride experience','Ease of drop-off','Would I ride again?']
+};
+function entryDims(e){ return e.dims || DIM_SETS[e.ds] || null; }
+
+const MEM_KEY = 'tokyo2026.mem.v1';
+let MEM = {};
+let COMMITTED = {};
+let expandedShop = {};
+let mapExpanded = false;
+let mapInstance = null;
+let showingContacts = false;
+let eatMarkers = [];
+
+function focusEat(i) {
+  const e = TRIP.eats[i];
+  document.querySelectorAll('.eat-card.selected').forEach(c => c.classList.remove('selected'));
+  const card = document.getElementById('eat-card-' + i);
+  if(card) card.classList.add('selected');
+  const mp = document.getElementById('map-panel');
+  const needReveal = window.innerWidth <= 700 && !mp.classList.contains('show-mobile');
+  if(needReveal) mp.classList.add('show-mobile');
+  const go = (tries) => {
+    // The eats map builds asynchronously after a tab switch — retry briefly until it's ready
+    if(!mapInstance || !mapInstance._eatsMap || !eatMarkers[i]) {
+      if(tries < 20) setTimeout(() => go(tries + 1), 100);
+      return;
+    }
+    mapInstance.invalidateSize();
+    mapInstance.setView([e.lat, e.lng], 16, {animate:false});
+    eatMarkers[i].openPopup();
+  };
+  // Synchronous when the map is already visible; defer only for the CSS reveal on mobile
+  if(needReveal) setTimeout(() => go(0), 150); else go(0);
+}
+
+function closeEatMap() {
+  document.getElementById('map-panel').classList.remove('show-mobile');
+}
+
+function setPart(p) {
+  activePart = p;
+  showingContacts = false;
+  closeEatMap();
+  if(p < 3) {
+    activeDay = TRIP.parts[p].days[0];
+    expandedEntries = {};
+  }
+  document.getElementById('part-select').value = p;
+  render();
+}
+
+function setDay(d) {
+  activeDay = d;
+  expandedEntries = {};
+  destroyMap();
+  render();
+}
+
+function openDay(di) {
+  const p = TRIP.parts.findIndex(pp => pp.days.includes(di));
+  if(p < 0) return;
+  activePart = p;
+  activeDay = di;
+  showingContacts = false;
+  expandedEntries = {};
+  destroyMap();
+  document.getElementById('part-select').value = p;
+  render();
+}
+
+function glanceTitle(t) {
+  t = t.replace(/\s*★\s*/g, ' ').replace(/\b\d{1,2}:\d{2}\s*(AM|PM)?/gi, '').replace(/\s{2,}/g, ' ').replace(/[,\s]+$/, '').trim();
+  const ix = t.indexOf(' — ');
+  if(ix >= 13) return t.slice(0, ix);
+  return t;
+}
+
+// Glance state for an entry. Entries with a bk key mirror their Bookings-tab item live:
+// done → locked, not done → needs booking. Others fall back to static lock/pend/alert flags.
+function entryState(e) {
+  if(e.bk !== undefined) {
+    const b = TRIP.bookings.find(bb => bb.text.includes(e.bk));
+    if(b) {
+      if(b.done) return {s:'lock', time: e.lock || e.wl || e.pend || ''};
+      if(e.wl !== undefined) return {s:'wait', time: e.wl};
+      return {s:'pend', time: e.pend || e.lock || ''};
+    }
+  }
+  if(e.wl !== undefined) return {s:'wait', time: e.wl};
+  if(e.lock) return {s:'lock', time: e.lock};
+  if(e.pend !== undefined || e.tags.includes('alert')) return {s:'pend', time: e.pend || ''};
+  return {s:'open', time:''};
+}
+
+function toggleEntry(sIdx, eIdx) {
+  const key = sIdx+'_'+eIdx;
+  expandedEntries[key] = !expandedEntries[key];
+  renderLeft();
+}
+
+function toggleBooking(i) {
+  TRIP.bookings[i].done = !TRIP.bookings[i].done;
+  renderLeft();
+}
+
+let collapsedCats = {};
+
+function toggleShopCat(cat) {
+  collapsedCats[cat] = !collapsedCats[cat];
+  renderLeft();
+}
+
+function toggleShopItem(i) {
+  expandedShop[i] = !expandedShop[i];
+  renderLeft();
+}
+
+function toggleShopBought(i, ev) {
+  ev.stopPropagation();
+  TRIP.shopping[i].bought = !TRIP.shopping[i].bought;
+  renderLeft();
+}
+
+function toggleMap() {
+  mapExpanded = !mapExpanded;
+  const mp = document.getElementById('map-panel');
+  const btn = document.getElementById('map-btn');
+  mp.classList.toggle('expanded-mode', mapExpanded);
+  btn.classList.toggle('active', mapExpanded);
+  btn.innerHTML = mapExpanded
+    ? `<svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" style="width:13px;height:13px"><path d="M1 3l5 2 4-2 5 2v10l-5-2-4 2-5-2V3z"/><path d="M6 5v10M10 3v10"/></svg> Close Map`
+    : `<svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" style="width:13px;height:13px"><path d="M1 3l5 2 4-2 5 2v10l-5-2-4 2-5-2V3z"/><path d="M6 5v10M10 3v10"/></svg> Expand Map`;
+  if(mapInstance) setTimeout(() => mapInstance.invalidateSize(), 50);
+}
+
+function showContacts() {
+  showingContacts = !showingContacts;
+  renderLeft();
+}
+
+function destroyMap() {
+  if(mapInstance){ mapInstance.remove(); mapInstance = null; }
+}
+
+// Draggable split between itinerary and map (in-memory only; defaults to 50/50 each load)
+(function initSplitDivider() {
+  const divider = document.getElementById('split-divider');
+  const lp = document.getElementById('left-panel');
+  if(!divider) return;
+  let raf = null;
+  const refreshMap = () => {
+    if(raf) return;
+    raf = requestAnimationFrame(() => { raf = null; if(mapInstance) mapInstance.invalidateSize(); });
+  };
+  divider.addEventListener('pointerdown', ev => {
+    ev.preventDefault();
+    try { divider.setPointerCapture(ev.pointerId); } catch(_) {}
+    divider.classList.add('dragging');
+    document.body.classList.add('resizing');
+    const split = divider.parentElement.getBoundingClientRect();
+    const onMove = e => {
+      const pct = Math.min(78, Math.max(22, (e.clientX - split.left) / split.width * 100));
+      lp.style.width = pct + '%';
+      refreshMap();
+    };
+    const onUp = e => {
+      try { divider.releasePointerCapture(e.pointerId); } catch(_) {}
+      divider.classList.remove('dragging');
+      document.body.classList.remove('resizing');
+      window.removeEventListener('pointermove', onMove);
+      window.removeEventListener('pointerup', onUp);
+      if(mapInstance) mapInstance.invalidateSize();
+    };
+    window.addEventListener('pointermove', onMove);
+    window.addEventListener('pointerup', onUp);
+  });
+  divider.addEventListener('dblclick', () => {
+    lp.style.width = '50%';
+    if(mapInstance) mapInstance.invalidateSize();
+  });
+})();
+
+function renderDayStrip() {
+  const el = document.getElementById('day-strip-wrap');
+  if(activePart >= 3){ el.innerHTML=''; return; }
+  const days = TRIP.parts[activePart].days;
+  el.innerHTML = `<div class="day-strip">${days.map((di,i) => {
+    const d = TRIP.days[di];
+    const cls = 'day-chip' + (di===activeDay?' active':'');
+    return `<div class="${cls}" onclick="setDay(${di})">
+      <div class="dc-label">Day ${d.dayNum}</div>
+      <div class="dc-date">${d.label}</div>
+      <div class="dc-day">${d.sub}</div>
+    </div>`;
+  }).join('')}</div>`;
+}
+
+function renderLeft() {
+  const lp = document.getElementById('left-panel');
+
+  if(showingContacts) {
+    let h = `<div class="contacts-panel"><h3>Contacts &amp; Hotels</h3>`;
+    TRIP.hotels.forEach(ho => {
+      h += `<div class="hotel-block"><div class="hb-name">${ho.name}</div><div class="hb-addr">${ho.addr}</div><div class="hb-phone">${ho.phone}</div><div class="hb-dates">${ho.dates}</div>${ho.policy?`<div class="hb-policy">${ho.policy}</div>`:''}</div>`;
+    });
+    h += `<h3 style="margin-top:16px;margin-bottom:12px">Key contacts</h3><div class="contact-list">`;
+    TRIP.contacts.forEach(c => {
+      h += `<div class="contact-row"><span class="cn">${c.name}</span><span class="cv">${c.num}</span></div>`;
+    });
+    h += `</div></div>`;
+    lp.innerHTML = '<div class="lp-inner">' + h + '</div>'; return;
+  }
+
+  // AT A GLANCE — the home screen
+  if(activePart === 7) {
+    let h = `<div class="glance-panel"><h3>The Trip at a Glance</h3>
+      <div class="g-legend"><span class="gl-lock">🔒 Booked — fixed</span><span class="gl-wait">⏳ Pending confirmation</span><span class="gl-pend">⚠ Needs booking</span><span class="gl-open">○ Open — suggested plan</span></div>`;
+    TRIP.days.forEach((d, di) => {
+      h += `<div class="g-day" onclick="openDay(${di})">
+        <div class="g-head"><span class="g-daynum">DAY ${d.dayNum}</span><span class="g-date">${d.date}</span><span class="g-theme">${d.theme}</span><span class="g-loc">${d.location}</span></div>`;
+      d.sections.forEach(sec => {
+        const rows = [];
+        sec.entries.forEach(e => {
+          const t = glanceTitle(e.title);
+          const st = entryState(e);
+          if(st.s === 'lock') rows.push(`<div class="g-row g-lock">🔒 ${st.time ? `<b>${st.time}</b> · ` : ''}${t}</div>`);
+          else if(st.s === 'wait') rows.push(`<div class="g-row g-wait">⏳ ${st.time ? `<b>${st.time}</b> · ` : ''}${t} — <b>pending</b></div>`);
+          else if(st.s === 'pend') rows.push(`<div class="g-row g-pend">⚠ ${st.time ? `<b>${st.time}</b> · ` : ''}${t} — <b>not booked</b></div>`);
+          else {
+            const last = rows[rows.length - 1];
+            if(last && last.open) last.items.push(t);
+            else rows.push({open:true, items:[t]});
+          }
+        });
+        const rendered = rows.map(r => typeof r === 'string' ? r : `<div class="g-row g-open">○ ${r.items.join(' · ')}</div>`).join('');
+        h += `<div class="g-sec"><div class="g-seclabel">${sec.time}</div><div class="g-rows">${rendered}</div></div>`;
+      });
+      h += `</div>`;
+    });
+    h += `</div>`;
+    lp.innerHTML = '<div class="lp-inner">' + h + '</div>'; return;
+  }
+
+  if(activePart === 3) {
+    const done = TRIP.bookings.filter(b=>b.done).length;
+    let h = `<div class="bookings-panel"><h3>Bookings checklist</h3><div class="b-progress">${done} of ${TRIP.bookings.length} confirmed</div><div>`;
+    TRIP.bookings.forEach((b,i) => {
+      h += `<div class="b-item">
+        <div class="b-dot ${b.done?'done':'pending'}"></div>
+        <div style="flex:1;min-width:0"><div class="b-text" style="${b.done?'text-decoration:line-through;color:#aaa':''}">${b.text}</div><div class="b-sub">${b.sub}</div></div>
+        <button class="b-btn" onclick="toggleBooking(${i})">${b.done?'undo':'done'}</button>
+      </div>`;
+    });
+    h += `</div></div>`;
+    lp.innerHTML = '<div class="lp-inner">' + h + '</div>'; return;
+  }
+
+  // SHOPPING TAB
+  if(activePart === 4) {
+    const bought = TRIP.shopping.filter(s=>s.bought).length;
+    let h = `<div class="shopping-panel"><h3>Shopping List</h3>
+      <div class="shopping-intro">${bought} of ${TRIP.shopping.length} acquired · Location badges show where to buy; timing shows the best day.</div>`;
+
+    const CAT_LABELS = {skincare:'Skincare & Beauty',food:'Food & Pantry',confectionery:'Confectionery & Treats',drinks:'Drinks & Spirits',antiques:'Kitchen, Craft & Paper'};
+    const CAT_ORDER = ['food','antiques','confectionery','drinks','skincare'];
+    const LOC_MAP = {ginza:'Ginza & central',tsukiji:'Tsukiji',hotel:'Before departure',hnd:'HND Airport'};
+    const LOC_CLS = {ginza:'loc-paris',tsukiji:'loc-provence',hotel:'loc-both',hnd:'loc-cdg'};
+    const PRI_CLS = {essential:'pri-essential',recommended:'pri-recommended',nice:'pri-nice'};
+    const PRI_LABEL = {essential:'Essential',recommended:'Recommended',nice:'Nice to Have'};
+    const PACK_ICON = `<svg viewBox="0 0 16 16"><path d="M4 2h8a2 2 0 012 2v8a2 2 0 01-2 2H4a2 2 0 01-2-2V4a2 2 0 012-2z" fill="none" stroke="currentColor" stroke-width="1.3"/><path d="M6 2v3h4V2" fill="none" stroke="currentColor" stroke-width="1.3"/></svg>`;
+    const PACK_MAP = {carry:'Carry-on OK',checked:'Checked bag',either:'Either'};
+    const PACK_CLS_MAP = {carry:'pack-carry',checked:'pack-checked',either:'pack-either'};
+
+    // Filter state
+    if(!window._shopFilter) window._shopFilter = 'all';
+    const sf = window._shopFilter;
+
+    const filtered = sf === 'all' ? TRIP.shopping :
+      sf === 'essential' ? TRIP.shopping.filter(s=>s.pri==='essential') :
+      sf === 'ginza' ? TRIP.shopping.filter(s=>s.loc==='ginza') :
+      sf === 'tsukiji' ? TRIP.shopping.filter(s=>s.loc==='tsukiji') :
+      sf === 'hnd' ? TRIP.shopping.filter(s=>s.loc==='hnd') :
+      TRIP.shopping;
+
+    h += `<div class="shop-filter-bar">
+      <button class="shop-filter ${sf==='all'?'active':''}" onclick="window._shopFilter='all';renderLeft()">All (${TRIP.shopping.length})</button>
+      <button class="shop-filter ${sf==='essential'?'active':''}" onclick="window._shopFilter='essential';renderLeft()">Essential</button>
+      <button class="shop-filter ${sf==='tsukiji'?'active':''}" onclick="window._shopFilter='tsukiji';renderLeft()">Tsukiji</button>
+      <button class="shop-filter ${sf==='ginza'?'active':''}" onclick="window._shopFilter='ginza';renderLeft()">Ginza</button>
+      <button class="shop-filter ${sf==='hnd'?'active':''}" onclick="window._shopFilter='hnd';renderLeft()">Airport</button>
+    </div>`;
+
+    CAT_ORDER.forEach(cat => {
+      const catItems = filtered.filter(s=>s.cat===cat);
+      if(!catItems.length) return;
+      const isCollapsed = !!collapsedCats[cat];
+      const boughtInCat = catItems.filter(s=>s.bought).length;
+      const boughtStr = boughtInCat > 0 ? `<span class="cat-bought">✓ ${boughtInCat}</span>` : '';
+      h += `<div class="cat-header${isCollapsed?' collapsed':''}" onclick="toggleShopCat('${cat}')">
+        ${CAT_LABELS[cat]} <span class="cat-count">(${catItems.length})</span>${boughtStr}
+        <span class="cat-chevron">▼</span>
+      </div>`;
+      h += `<div class="cat-items${isCollapsed?' collapsed':''}" style="max-height:${isCollapsed?'0':'9999'}px">`;
+      catItems.forEach(s => {
+        const idx = TRIP.shopping.indexOf(s);
+        const exp = !!expandedShop[idx];
+        h += `<div class="shop-item${exp?' expanded':''}" onclick="toggleShopItem(${idx})">
+          <div class="shop-main">
+            <div class="shop-icon">${ICONS.shop}</div>
+            <div class="shop-content">
+              <div class="shop-title-row">
+                <div class="shop-title" style="${s.bought?'text-decoration:line-through;color:#aaa':''}">${s.title}</div>
+                <span class="entry-chevron">${exp?'▲':'▼'}</span>
+              </div>
+              <div class="shop-meta">
+                <span class="loc-badge ${LOC_CLS[s.loc]||'loc-both'}">${LOC_MAP[s.loc]||s.loc}</span>
+                <span class="pri-badge ${PRI_CLS[s.pri]||''}">${PRI_LABEL[s.pri]||''}</span>
+                <span class="timing-badge"><svg viewBox="0 0 16 16"><circle cx="8" cy="8" r="6" fill="none" stroke="#bbb" stroke-width="1.5"/><path d="M8 5v3l2 2" stroke="#bbb" stroke-width="1.5" fill="none"/></svg>${s.timing}</span>
+              </div>
+            </div>
+          </div>`;
+        if(exp) {
+          h += `<div class="shop-expanded">
+            <div class="shop-where">${s.where}</div>
+            <div>${s.tip}</div>
+            <div class="shop-packing ${PACK_CLS_MAP[s.pack]||''}">${PACK_ICON} ${PACK_MAP[s.pack]||s.pack}${s.forWho?`<span class="shop-for">For: ${s.forWho}</span>`:''}</div>
+            <div class="shop-check ${s.bought?'checked':''}" onclick="toggleShopBought(${idx},event)">
+              <input type="checkbox" ${s.bought?'checked':''} onclick="toggleShopBought(${idx},event)">
+              <span>${s.bought?'Acquired':'Mark as acquired'}</span>
+            </div>
+          </div>`;
+        }
+        h += `</div>`;
+      });
+      h += `</div>`; // close cat-items
+    });
+
+    // Packing protocol note
+    h += `<div class="day-note-bar" style="margin-top:16px">
+      <strong>Carry-home protocol:</strong> Knife and all liquids (skincare, sake, whisky bought in town) go in the checked bag; duty-free whisky bought after security at HND stays sealed in its bag through the DTW connection. Tea, nori, yokan and paper ride in carry-on. Royce chocolate needs the shop's cold pack and the Boston fridge within 24 h. Omiyage for the Japan team travels outbound in carry-on, boxed, and is handed over Tuesday morning.
+    </div>`;
+
+    h += `</div>`;
+    lp.innerHTML = '<div class="lp-inner">' + h + '</div>'; return;
+  }
+
+  // RESTAURANT IDEAS TAB
+  if(activePart === 5) {
+    let h = `<div class="eats-panel"><h3>Potential Spots to Eat</h3>
+      <div class="shopping-intro">Unbooked ideas for open meals. Tap to call, book online, or open in Maps — reservation windows noted per spot.</div>`;
+    h += `<div class="mobile-map-banner">
+      <div class="mmb-title">📍 Open locations in Maps</div>
+      <div class="mmb-btns">${TRIP.eats.map(e => `<a class="mmb-btn" href="${mapsUrl(e.lat, e.lng, e.name)}" target="_blank">${ICONS.nav} ${e.name}</a>`).join('')}</div>
+    </div>`;
+    const EAT_GROUPS = [['shortlist','Your Shortlist'],['breakfast','Breakfast & Pastry — influencer picks'],['lunch','Lunch — influencer picks'],['dinner','Dinner — influencer picks']];
+    EAT_GROUPS.forEach(([g, glabel]) => {
+      const items = TRIP.eats.filter(e => e.cat === g);
+      if(!items.length) return;
+      h += `<div class="eat-group">${glabel}</div>`;
+      items.forEach(e => {
+        const idx = TRIP.eats.indexOf(e);
+        h += `<div class="eat-card" id="eat-card-${idx}" onclick="focusEat(${idx})">
+          <div class="eat-name">${e.name} <span class="eat-area">${e.area}</span>${e.price?` <span class="eat-area">${e.price}</span>`:''}</div>
+          <div class="eat-known">${e.known}</div>
+          <div class="eat-meta">${e.addr}${e.closed?` · <b>${e.closed}</b>`:''}</div>
+          ${e.dir?`<div class="eat-dir">${e.dir}</div>`:''}
+          <div class="eat-res">${e.res}</div>
+          ${e.src?`<div class="eat-src">♥ ${e.src}</div>`:''}
+          <div class="eat-actions">
+            ${e.phone?`<a class="maps-btn" href="tel:${e.phone.replace(/[^+\d]/g,'')}" onclick="event.stopPropagation()">📞 ${e.phone}</a>`:''}
+            ${e.resUrl?`<a class="maps-btn" href="${e.resUrl}" target="_blank" onclick="event.stopPropagation()">🔗 Book online</a>`:''}
+            <a class="maps-btn" href="${mapsUrl(e.lat, e.lng, e.name)}" target="_blank" onclick="event.stopPropagation()">${ICONS.nav} Map</a>
+          </div>
+        </div>`;
+      });
+    });
+    h += `</div>`;
+    lp.innerHTML = '<div class="lp-inner">' + h + '</div>'; return;
+  }
+
+  if(activePart === 6) {
+    showingContacts = true; renderLeft(); return;
+  }
+
+  const day = TRIP.days[activeDay];
+  const hotel = TRIP.hotels[day.hotel];
+
+  // Mobile map banner with Open in Maps buttons
+  let mobileBanner = '';
+  const dayPins = [];
+  day.sections.forEach(sec => {
+    sec.entries.forEach(e => {
+      if(e.lat && e.lng) dayPins.push({title:e.title, lat:e.lat, lng:e.lng});
+    });
+  });
+  if(dayPins.length > 0) {
+    mobileBanner = `<div class="mobile-map-banner">
+      <div class="mmb-title">📍 Open locations in Maps</div>
+      <div class="mmb-btns">
+        <a class="mmb-btn" href="${mapsUrl(hotel.lat, hotel.lng, hotel.name)}" target="_blank">${ICONS.nav} ${hotel.name}</a>
+        ${dayPins.map(p => `<a class="mmb-btn" href="${mapsUrl(p.lat, p.lng, p.title)}" target="_blank">${ICONS.nav} ${p.title}</a>`).join('')}
+      </div>
+    </div>`;
+  }
+
+  let h = `<div class="day-hero">
+    <div class="day-hero-date">
+      ${day.date.toUpperCase()}
+      <span class="location-badge"><svg viewBox="0 0 10 13"><path d="M5 0C2.24 0 0 2.24 0 5c0 3.75 5 8 5 8s5-4.25 5-8c0-2.76-2.24-5-5-5zm0 6.5c-.83 0-1.5-.67-1.5-1.5S4.17 3.5 5 3.5 6.5 4.17 6.5 5 5.83 6.5 5 6.5z" fill="#aaa"/></svg>${day.location}</span>
+    </div>
+    <div class="day-hero-title">${day.theme}</div>
+    <div class="day-hero-sub">${day.sub2}</div>
+  </div>
+  ${day.note ? `<div class="day-note-bar">${day.note}</div>` : ''}
+  ${rainBar(day)}
+  ${nudgeBar(day)}
+  ${mobileBanner}`;
+
+  day.sections.forEach((sec, sIdx) => {
+    h += `<div class="time-section"><div class="time-label">${sec.time}${wxStrip(day, sec.time)}</div>`;
+    sec.entries.forEach((e, eIdx) => {
+      const key = sIdx+'_'+eIdx;
+      const exp = !!expandedEntries[key];
+      const isAlert = e.tags.includes('alert');
+      const isSpec = e.tags.includes('special');
+      const [iconType, iconCls] = getIcon(e.tags);
+      let cardCls = 'entry-card';
+      if(exp) cardCls += ' expanded';
+      if(isAlert) cardCls += ' alert';
+      else if(isSpec) cardCls += ' is-special';
+
+      h += `<div class="${cardCls}" onclick="toggleEntry(${sIdx},${eIdx})">
+        <div class="entry-main">
+          <div class="entry-icon ${iconCls}">${ICONS[iconType]||ICONS.walk}</div>
+          <div class="entry-content">
+            <div class="entry-title-row">
+              <div class="entry-title">${e.title}</div>
+              <span class="entry-chevron">${exp?'▲':'▼'}</span>
+            </div>
+            <div class="entry-meta">`;
+      if(e.addr && e.addr !== 'At hotel' && e.addr !== '—') {
+        h += `<span class="meta-addr"><svg viewBox="0 0 10 13"><path d="M5 0C2.24 0 0 2.24 0 5c0 3.75 5 8 5 8s5-4.25 5-8c0-2.76-2.24-5-5-5zm0 6.5c-.83 0-1.5-.67-1.5-1.5S4.17 3.5 5 3.5 6.5 4.17 6.5 5 5.83 6.5 5 6.5z"/></svg>${e.addr}</span>`;
+      }
+      if(e.metro && e.metro !== '—') {
+        const mparts = e.metro.match(/^(.+)\s+\((.+)\)$/);
+        if(mparts) h += `<span class="metro-m">M</span><span class="walk-time">${mparts[1]}</span>`;
+        else h += `<span class="walk-time">${e.metro}</span>`;
+      }
+      if(e.walk && e.walk !== '—' && e.walk !== 'At hotel') h += `<span class="walk-time">· ${e.walk}</span>`;
+      if(isAlert) h += `<span class="alert-pill">book ahead</span>`;
+      h += `</div></div></div>`;
+
+      if(exp) {
+        h += `<div class="entry-expanded"><div class="exp-grid">`;
+        if(e.addr && e.addr !== '—' && e.addr !== 'At hotel') h += `<span class="exp-label">Address</span><span class="exp-val">${e.addr}</span>`;
+        if(e.metro && e.metro !== '—') h += `<span class="exp-label">Metro</span><span class="exp-val">${e.metro}</span>`;
+        if(e.walk && e.walk !== '—' && e.walk !== 'At hotel') h += `<span class="exp-label">Getting there</span><span class="exp-val">${e.walk}</span>`;
+        h += `</div>`;
+        // Open in Maps button for entries with coordinates
+        if(e.lat && e.lng) {
+          h += `<a class="maps-btn" href="${mapsUrl(e.lat, e.lng, e.title)}" target="_blank" onclick="event.stopPropagation()">${ICONS.nav} Open in Maps</a>`;
+        }
+        if(e.tips) h += `<div class="entry-tips">${e.tips}</div>`;
+        const _k = memKey(day.date, e.title);
+        h += memBlock(_k, 'How was it?', 'A line you\u2019ll want to remember\u2026', null, entryDims(e));
+        h += metaRow(_k, e);
+        h += `<div class="plan-note-label">From the plan \u2014 editable</div><textarea class="exp-note" rows="2" onclick="event.stopPropagation()" onblur="saveNote(${sIdx},${eIdx},this.value)">${e.note||''}</textarea></div>`;
+      }
+      h += `</div>`;
+    });
+    h += `</div>`;
+  });
+
+  extrasFor(day.date).forEach(x => {
+    const xk = extraKey(day.date, x.id);
+    h += '<div class="extra-card">' +
+         '<button type="button" class="extra-del" onclick="removeExtra(\'' + day.date + '\',\'' + x.id + '\')">remove</button>' +
+         '<input class="extra-title" type="text" placeholder="What was it? (bar, shop, detour\u2026)" value="' + escAttr(x.title) + '" ' +
+         'data-date="' + escAttr(day.date) + '" data-id="' + x.id + '" onblur="renameExtra(this)">' +
+         memBlock(xk, 'How was it?', 'Why it was worth stopping\u2026') + metaRow(xk, {}) + '</div>';
+  });
+  h += '<button type="button" class="extra-add" onclick="addExtra(\'' + day.date + '\')">+ Something we found</button>';
+  h += memBlock(memKey(day.date, '__day__'), 'How was today?', 'The one thing about today worth keeping\u2026', 'day-mem');
+  h += '<div class="mem-actions">' +
+       '<button type="button" class="mem-btn primary" onclick="openSheet()">Tonight</button>' +
+       '<button type="button" class="mem-btn" onclick="copyLog()">Log today</button>' +
+       '<button type="button" class="mem-btn" onclick="shareLog()">Share</button>' +
+       '<button type="button" class="mem-btn" onclick="copyAll()">Export all</button>' +
+       '<span class="mem-sync"></span></div>';
+  h += '<button type="button" class="mem-reset" onclick="resetMem()">reset this device\u2019s unsynced edits</button>';
+  lp.innerHTML = '<div class="lp-inner">' + h + '</div>';
+  updateSyncBadge();
+}
+
+/* --- Which day is it, really? ------------------------------------------- */
+const TRIP_YEAR = 2026;
+const MONTH_IX = {Jan:0,Feb:1,Mar:2,Apr:3,May:4,Jun:5,Jul:6,Aug:7,Sep:8,Oct:9,Nov:10,Dec:11};
+function dayAsDate(d){
+  const m = (d.label||'').match(/^([A-Za-z]{3})\s+(\d{1,2})$/);
+  return m && (MONTH_IX[m[1]] !== undefined) ? new Date(TRIP_YEAR, MONTH_IX[m[1]], parseInt(m[2],10)) : null;
+}
+function todayIndex(){
+  const n = new Date(), t = new Date(n.getFullYear(), n.getMonth(), n.getDate()).getTime();
+  return TRIP.days.findIndex(d => { const dd = dayAsDate(d); return dd && dd.getTime() === t; });
+}
+function hhmm(ms){
+  if(!ms) return '';
+  const d = new Date(ms);
+  return String(d.getHours()).padStart(2,'0') + ':' + String(d.getMinutes()).padStart(2,'0');
+}
+
+/* --- Weather ------------------------------------------------------------
+   Open-Meteo: no API key, so nothing secret sits in a page anyone with the
+   URL can read. Strictly progressive enhancement — every failure path renders
+   nothing and leaves the itinerary untouched. The cache is disposable derived
+   data, not state: losing it costs one refetch. */
+const WX_KEY = 'tokyo2026.wx.v2';   // v2: Fahrenheit — v1 cached Celsius and must not be reused
+const WX_TTL = 3 * 60 * 60 * 1000;      // 3h for a good answer
+const WX_FAIL_TTL = 10 * 60 * 1000;     // 10 min before retrying a failure
+const WX_BUCKETS = { 'EARLY MORNING':[6,9], 'MORNING':[9,12], 'AFTERNOON':[12,18], 'EVENING':[18,23], 'DEPARTURE':[7,13] };
+const WX_RAIN_AT = 30;                  // the threshold that summons a wet-weather plan
+let WX = {}, WX_INFLIGHT = {};
+
+function wxLoad(){ try { WX = JSON.parse(localStorage.getItem(WX_KEY) || '{}') || {}; } catch(err) { WX = {}; } }
+function wxSave(){ try { localStorage.setItem(WX_KEY, JSON.stringify(WX)); } catch(err) {} }
+function isoDate(d){ return d.getFullYear() + '-' + String(d.getMonth()+1).padStart(2,'0') + '-' + String(d.getDate()).padStart(2,'0'); }
+function wxCacheKey(day){ const d = dayAsDate(day); return d ? (isoDate(d) + '@' + day.hotel) : null; }
+
+/* WMO weather codes, collapsed to what a traveller actually needs. */
+function wxFace(code){
+  if(code === 0) return ['\u2600\ufe0f','clear'];
+  if(code <= 2) return ['\u26c5','part sun'];
+  if(code === 3) return ['\u2601\ufe0f','cloud'];
+  if(code <= 48) return ['\ud83c\udf2b\ufe0f','fog'];
+  if(code <= 57) return ['\ud83c\udf26\ufe0f','drizzle'];
+  if(code <= 67) return ['\ud83c\udf27\ufe0f','rain'];
+  if(code <= 77) return ['\ud83c\udf28\ufe0f','snow'];
+  if(code <= 82) return ['\ud83c\udf27\ufe0f','showers'];
+  if(code <= 99) return ['\u26c8\ufe0f','storms'];
+  return ['','' ];
+}
+
+/* Fold the hourly series into the day's own sections. */
+function wxBucket(hourly, day){
+  const out = {};
+  const times = hourly.time || [];
+  day.sections.forEach(sec => {
+    const span = WX_BUCKETS[sec.time];
+    if(!span) return;
+    let tmin = null, tmax = null, pop = 0, codes = [];
+    times.forEach((ts, i) => {
+      const hr = parseInt(String(ts).slice(11,13), 10);
+      if(hr < span[0] || hr >= span[1]) return;
+      const tp = hourly.temperature_2m[i], pr = hourly.precipitation_probability[i], cd = hourly.weather_code[i];
+      if(typeof tp === 'number'){ tmin = (tmin === null) ? tp : Math.min(tmin, tp); tmax = (tmax === null) ? tp : Math.max(tmax, tp); }
+      if(typeof pr === 'number') pop = Math.max(pop, pr);
+      if(typeof cd === 'number') codes.push(cd);
+    });
+    if(tmin === null) return;
+    codes.sort((x,y) => y - x);           // lead with the worst hour, not the average
+    out[sec.time] = { lo: Math.round(tmin), hi: Math.round(tmax), pop: Math.round(pop), code: codes[0] || 0 };
+  });
+  return out;
+}
+
+function wxFetch(day){
+  const ck = wxCacheKey(day);
+  if(!ck || WX_INFLIGHT[ck]) return;
+  const hotel = TRIP.hotels[day.hotel];
+  const d = dayAsDate(day);
+  if(!hotel || !d || typeof fetch !== 'function') return;
+  WX_INFLIGHT[ck] = true;
+  const ds = isoDate(d);
+  const url = 'https://api.open-meteo.com/v1/forecast?latitude=' + hotel.lat + '&longitude=' + hotel.lng +
+              '&hourly=temperature_2m,precipitation_probability,weather_code&temperature_unit=fahrenheit&timezone=Asia%2FTokyo' +
+              '&start_date=' + ds + '&end_date=' + ds;
+  const ctl = (typeof AbortController === 'function') ? new AbortController() : null;
+  const timer = ctl ? setTimeout(() => ctl.abort(), 7000) : null;
+  fetch(url, ctl ? {signal: ctl.signal} : undefined)
+    .then(r => r.ok ? r.json() : Promise.reject(new Error('http ' + r.status)))
+    .then(j => {
+      if(!j || !j.hourly || !j.hourly.time) throw new Error('shape');
+      WX[ck] = { t: Date.now(), parts: wxBucket(j.hourly, day) };
+      wxSave(); delete WX_INFLIGHT[ck]; render();
+    })
+    .catch(() => {                         // offline, blocked, slow, or a changed shape: show nothing
+      WX[ck] = { t: Date.now(), fail: true };
+      wxSave(); delete WX_INFLIGHT[ck];
+    })
+    .then(() => { if(timer) clearTimeout(timer); });
+}
+
+function wxFor(day){
+  const ck = wxCacheKey(day);
+  if(!ck) return null;
+  const c = WX[ck];
+  const ttl = (c && c.fail) ? WX_FAIL_TTL : WX_TTL;
+  if(c && (Date.now() - c.t) < ttl) return c.fail ? null : c.parts;
+  wxFetch(day);
+  return (c && !c.fail) ? c.parts : null;   // keep showing stale data while refreshing
+}
+
+function wxStrip(day, secTime){
+  const parts = wxFor(day);
+  const w = parts && parts[secTime];
+  if(!w) return '';
+  const f = wxFace(w.code);
+  const wet = w.pop >= WX_RAIN_AT;
+  return '<span class="wx' + (wet ? ' wet' : '') + '">' + f[0] + ' ' +
+         (w.lo === w.hi ? w.hi + '\u00b0F' : w.lo + '\u2013' + w.hi + '\u00b0F') +
+         ' \u00b7 ' + w.pop + '%</span>';
+}
+
+/* One wet-weather banner per day, naming the part of day that is worst. */
+function rainBar(day){
+  const parts = wxFor(day);
+  if(!parts || !day.rain) return '';
+  let worst = null;
+  Object.keys(parts).forEach(k => { if(!worst || parts[k].pop > parts[worst].pop) worst = k; });
+  if(!worst || parts[worst].pop < WX_RAIN_AT) return '';
+  return '<div class="rain-bar"><div class="rain-hd">\u2614 ' + parts[worst].pop + '% chance ' +
+         (worst === 'DEPARTURE' ? 'around the transfer' : 'this ' + worst.toLowerCase()) + '</div>' +
+         '<div class="rain-body">' + day.rain + '</div></div>';
+}
+
+/* --- Things you found that the plan never knew about ---------------------
+   Ratings for these live in MEM under "<date>|+<id>", so every star, note and
+   log path works on them unchanged; EXTRAS only carries the titles. */
+const EXTRA_KEY = 'tokyo2026.extra.v1';
+let EXTRAS = {};
+function loadExtras(){ try { EXTRAS = JSON.parse(localStorage.getItem(EXTRA_KEY) || '{}') || {}; } catch(err) { EXTRAS = {}; } }
+function saveExtras(){ try { localStorage.setItem(EXTRA_KEY, JSON.stringify(EXTRAS)); } catch(err) {} }
+function extrasFor(dateStr){ return EXTRAS[dateStr] || []; }
+function extraKey(dateStr, id){ return dateStr + '|+' + id; }
+function addExtra(dateStr){
+  EXTRAS[dateStr] = extrasFor(dateStr).concat([{ id: 'x' + Date.now().toString(36), title: '' }]);
+  saveExtras(); render();
+}
+function renameExtra(el){
+  const dateStr = el.getAttribute('data-date'), id = el.getAttribute('data-id');
+  const row = extrasFor(dateStr).find(x => x.id === id);
+  if(row){ row.title = el.value; saveExtras(); updateSyncBadge(); }
+}
+function removeExtra(dateStr, id){
+  if(!confirm('Remove this entry and its ratings?')) return;
+  EXTRAS[dateStr] = extrasFor(dateStr).filter(x => x.id !== id);
+  delete MEM[extraKey(dateStr, id)];
+  saveExtras(); saveMem(); render();
+}
+
+function memKey(dayDate, title){ return dayDate + '|' + title; }
+function memBlank(){ return {j:0, b:0, imp:'', t:0, at:0, cost:''}; }
+function dimKey(k, dim){ return k + '#' + dim; }
+function getMem(k){ return Object.assign(memBlank(), MEM[k]); }
+function escAttr(s){ return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
+function escText(s){ return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+
+function loadMem(){
+  const seeded = {};
+  TRIP.days.forEach(d => {
+    const dr = d.dayR || {};
+    if(dr.j || dr.b || d.dayImp) seeded[memKey(d.date,'__day__')] = {j:dr.j||0, b:dr.b||0, imp:d.dayImp||''};
+    d.sections.forEach(s => s.entries.forEach(e => {
+      const r = e.r || {};
+      if(r.j || r.b || e.imp || e.at || e.cost)
+        seeded[memKey(d.date, e.title)] = {j:r.j||0, b:r.b||0, imp:e.imp||'', t:0, at:e.at||0, cost:e.cost||''};
+      if(e.dr) Object.keys(e.dr).forEach(dn => {
+        const v = e.dr[dn] || {};
+        if(v.j || v.b) seeded[dimKey(memKey(d.date, e.title), dn)] = {j:v.j||0, b:v.b||0, imp:''};
+      });
+    }));
+  });
+  COMMITTED = JSON.parse(JSON.stringify(seeded));
+  let buf = {};
+  try { buf = JSON.parse(localStorage.getItem(MEM_KEY) || '{}') || {}; } catch(err) { buf = {}; }
+  /* Merge FIELD-WISE, not per key. Each phone buffers only what that phone
+     entered, so a whole-object overwrite would let a stale buffer wipe the
+     other person's rating (and any committed impression) after a sync. A
+     buffered value wins where it holds something; otherwise the committed
+     value shows through. Consequence: clearing a rating that is already
+     committed has to be done at commit time, not by tapping it off locally. */
+  loadExtras();
+  wxLoad();
+  MEM = Object.assign({}, seeded);
+  Object.keys(buf).forEach(k => {
+    const c = Object.assign(memBlank(), seeded[k]);
+    const v = Object.assign(memBlank(), buf[k]);
+    MEM[k] = { j: v.j || c.j, b: v.b || c.b, imp: v.imp || c.imp,
+                t: v.t || c.t, at: v.at || c.at, cost: v.cost || c.cost };
+  });
+}
+
+function saveMem(){
+  try { localStorage.setItem(MEM_KEY, JSON.stringify(MEM)); } catch(err) { /* private mode / quota: in-memory still works */ }
+}
+
+function memDirty(k){
+  const a = getMem(k), b = Object.assign(memBlank(), COMMITTED[k]);
+  return a.j !== b.j || a.b !== b.b || (a.imp||'') !== (b.imp||'') || (a.cost||'') !== (b.cost||'') || (a.at||0) !== (b.at||0);
+}
+function unsyncedCount(){ return Object.keys(MEM).filter(memDirty).length; }
+
+/* Keep the sheet's "n still unrated" honest while they work down the list. */
+function updateSheetSub(){
+  const el = document.getElementById('sheet-sub');
+  if(!el || !document.getElementById('sheet').classList.contains('open')) return;
+  const u = unratedToday(TRIP.days[activeDay]);
+  el.textContent = u.left ? (u.left + ' still unrated') : 'all rated \u2713';
+}
+
+function updateSyncBadge(){
+  updateSheetSub();
+  const n = unsyncedCount();
+  document.querySelectorAll('.mem-sync').forEach(el => {
+    el.textContent = n ? (n + ' unsynced') : 'all synced';
+    el.className = 'mem-sync' + (n ? ' dirty' : '');
+  });
+}
+
+/* Who rates. One rater on this trip; add {k:'b',name:'…'} for a second. */
+const RATERS = [{k:'j', name:'James'}];
+function starRows(k, compact){ return RATERS.map(r => starRow(k, r.k, r.name, compact)).join(''); }
+function ratingLines(m, indent){ return RATERS.filter(r => m[r.k]).map(r => (indent||'') + '- ' + r.name + ': ' + m[r.k] + '/5'); }
+
+function starRow(k, who, label, compact){
+  const v = getMem(k)[who];
+  let s = '<div class="mem-row"><span class="mem-who">' + label + '</span>' +
+          '<span class="mem-stars' + (compact ? ' mem-stars-sm' : '') + '" data-k="' + escAttr(k) + '" data-who="' + who + '">';
+  for(let i=1;i<=5;i++) s += '<button type="button" class="mem-star' + (i<=v?' on':'') + '" onclick="event.stopPropagation();rate(this,' + i + ')">\u2605</button>';
+  return s + '</span></div>';
+}
+
+function rate(btn, val){
+  const wrap = btn.parentNode;
+  const k = wrap.getAttribute('data-k'), who = wrap.getAttribute('data-who');
+  const m = getMem(k);
+  m[who] = (m[who] === val) ? 0 : val;   // tapping the current rating clears it
+  m.t = Date.now();
+  MEM[k] = m; saveMem();
+  Array.prototype.forEach.call(wrap.children, (el, idx) => el.classList.toggle('on', idx < m[who]));
+  updateSyncBadge();
+}
+
+function saveImp(el){
+  const k = el.getAttribute('data-k');
+  const m = getMem(k);
+  m.imp = el.value;
+  m.t = Date.now();
+  MEM[k] = m; saveMem();
+  updateSyncBadge();
+}
+
+/* What it actually cost — restaurants and the table d'hotes only. */
+function saveCost(el){
+  const k = el.getAttribute('data-k');
+  const m = getMem(k);
+  m.cost = el.value.trim();
+  MEM[k] = m; saveMem();
+  updateSyncBadge();
+}
+function wantsCost(e){ return e.ds === 'restaurant' || e.ds === 'table'; }
+
+/* "We're here" — the real arrival time, against what the plan predicted. */
+function markHere(btn){
+  const k = btn.getAttribute('data-k');
+  const m = getMem(k);
+  m.at = Date.now();
+  MEM[k] = m; saveMem();
+  btn.outerHTML = '<span class="mem-here-set">arrived ' + hhmm(m.at) + '</span>';
+  updateSyncBadge();
+}
+
+function memBlock(k, head, placeholder, cls, dims){
+  let s = '<div class="' + (cls || 'mem-block') + '" onclick="event.stopPropagation()">' +
+    '<div class="mem-head">' + head + '</div>' +
+    starRows(k);
+  if(dims && dims.length){
+    s += '<div class="mem-dims">';
+    dims.forEach(d => {
+      const dk = dimKey(k, d);
+      s += '<div class="mem-dim"><div class="mem-dim-label">' + escText(d) + '</div>' +
+           starRows(dk, true) + '</div>';
+    });
+    s += '</div>';
+  }
+  return s + '<textarea class="mem-imp" rows="2" placeholder="' + escAttr(placeholder) + '" data-k="' + escAttr(k) + '" ' +
+    'onclick="event.stopPropagation()" onblur="saveImp(this)">' + escText(getMem(k).imp) + '</textarea></div>';
+}
+
+/* Arrival stamp, and what it cost where that is worth knowing. */
+function metaRow(k, e){
+  const m = getMem(k);
+  let s = '<div class="mem-meta" onclick="event.stopPropagation()">';
+  s += m.at ? '<span class="mem-here-set">arrived ' + hhmm(m.at) + '</span>'
+            : '<button type="button" class="mem-here" data-k="' + escAttr(k) + '" onclick="event.stopPropagation();markHere(this)">\u23f1 we\u2019re here</button>';
+  if(wantsCost(e)) s += '<input class="mem-cost" type="text" inputmode="decimal" placeholder="\u20ac what it cost" value="' +
+      escAttr(m.cost || '') + '" data-k="' + escAttr(k) + '" onclick="event.stopPropagation()" onblur="saveCost(this)">';
+  return s + '</div>';
+}
+
+/* Markdown for the active day — paste straight into Claude for committing. */
+function buildDayLog(){
+  const d = TRIP.days[activeDay];
+  const out = ['# ' + d.date + ' \u2014 ' + d.theme, ''];
+  const dm = getMem(memKey(d.date, '__day__'));
+  if(dm.j || dm.b || dm.imp){
+    out.push('## The day overall');
+    ratingLines(dm).forEach(l => out.push(l));
+    if(dm.imp) out.push('- ' + dm.imp);
+    out.push('');
+  }
+  let any = false;
+  d.sections.forEach(s => s.entries.forEach(e => {
+    const m = getMem(memKey(d.date, e.title));
+    const hasDim = (entryDims(e) || []).some(dn => { const dm = getMem(dimKey(memKey(d.date, e.title), dn)); return dm.j || dm.b; });
+    if(!m.j && !m.b && !m.imp && !hasDim && !m.cost && !m.at) return;  // a cost or an arrival stamp is content too
+    any = true;
+    out.push('### ' + e.title);
+    ratingLines(m).forEach(l => out.push(l));
+    (entryDims(e) || []).forEach(dn => {
+      const dm = getMem(dimKey(memKey(d.date, e.title), dn));
+      if(dm.j || dm.b) out.push('  - ' + dn + ': ' + RATERS.map(r => r.name + ' ' + (dm[r.k] || '\u2013') + '/5').join(', '));
+    });
+    if(m.cost) out.push('- cost: ' + m.cost);
+    if(m.at) out.push('- arrived: ' + hhmm(m.at));
+    if(m.imp) out.push('- ' + m.imp);
+    if(m.t) out.push('- (rated ' + hhmm(m.t) + ')');
+    out.push('');
+  }));
+  extrasFor(d.date).forEach(x => {
+    const xm = getMem(extraKey(d.date, x.id));
+    if(!xm.j && !xm.b && !xm.imp && !x.title) return;
+    any = true;
+    out.push('### [not in the plan] ' + (x.title || 'untitled'));
+    ratingLines(xm).forEach(l => out.push(l));
+    if(xm.at) out.push('- arrived: ' + hhmm(xm.at));
+    if(xm.imp) out.push('- ' + xm.imp);
+    out.push('');
+  });
+  if(!any && !(dm.j || dm.b || dm.imp)) return null;
+  return out.join('\n');
+}
+
+/* How much of today is still unrated. */
+function unratedToday(day){
+  let total = 0, done = 0;
+  day.sections.forEach(s => s.entries.forEach(e => {
+    total++;
+    const m = getMem(memKey(day.date, e.title));
+    if(m.j || m.b || m.imp) done++;
+  }));
+  return { total: total, done: done, left: total - done };
+}
+
+function nudgeBar(day){
+  if(TRIP.days[activeDay] !== day) return '';
+  if(todayIndex() !== activeDay) return '';
+  if(new Date().getHours() < 21) return '';
+  const u = unratedToday(day);
+  if(u.left <= 0) return '';
+  return '<div class="nudge"><span><b>' + u.left + ' of ' + u.total + '</b> things today are still unrated.</span>' +
+         '<button type="button" class="mem-btn" onclick="openSheet()">Rate them now</button></div>';
+}
+
+/* The one-screen evening pass: everything today, stars inline. */
+function openSheet(){
+  const day = TRIP.days[activeDay];
+  const u = unratedToday(day);
+  let s = '';
+  day.sections.forEach(sec => {
+    s += '<div class="sheet-sec">' + sec.time + '</div>';
+    sec.entries.forEach(e => {
+      const k = memKey(day.date, e.title);
+      s += '<div class="sheet-row"><div class="sheet-t">' + escText(e.title) + '</div>' +
+           starRows(k, true) +
+           '<textarea class="mem-imp" rows="1" placeholder="a line\u2026" data-k="' + escAttr(k) + '" onblur="saveImp(this)">' +
+           escText(getMem(k).imp) + '</textarea></div>';
+    });
+  });
+  const xs = extrasFor(day.date);
+  if(xs.length){
+    s += '<div class="sheet-sec">Things you found</div>';
+    xs.forEach(x => {
+      const xk = extraKey(day.date, x.id);
+      s += '<div class="sheet-row"><div class="sheet-t">' + (escText(x.title) || '<em>untitled</em>') + '</div>' +
+           starRows(xk, true) +
+           '<textarea class="mem-imp" rows="1" placeholder="a line\u2026" data-k="' + escAttr(xk) + '" onblur="saveImp(this)">' +
+           escText(getMem(xk).imp) + '</textarea></div>';
+    });
+  }
+  const dk = memKey(day.date, '__day__');
+  s += '<div class="sheet-sec">The day itself</div><div class="sheet-row">' +
+       starRows(dk, true) +
+       '<textarea class="mem-imp" rows="2" placeholder="The one thing about today worth keeping\u2026" data-k="' + escAttr(dk) + '" onblur="saveImp(this)">' +
+       escText(getMem(dk).imp) + '</textarea></div>';
+
+  document.getElementById('sheet-title').textContent = day.date;
+  document.getElementById('sheet-sub').textContent = u.left ? (u.left + ' still unrated') : 'all rated';
+  document.getElementById('sheet-body').innerHTML = s;
+  document.getElementById('sheet').classList.add('open');
+  document.getElementById('sheet-back').classList.add('open');
+}
+function closeSheet(){
+  document.getElementById('sheet').classList.remove('open');
+  document.getElementById('sheet-back').classList.remove('open');
+  render();
+}
+
+/* Everything captured so far — the belt-and-braces export. */
+function buildAllLog(){
+  const keep = activeDay, out = [];
+  TRIP.days.forEach((d, i) => { activeDay = i; const md = buildDayLog(); if(md) out.push(md); });
+  activeDay = keep;
+  return out.length ? out.join('\n---\n\n') : null;
+}
+function copyAll(){
+  const txt = buildAllLog();
+  if(!txt){ memFlash('nothing captured yet'); return; }
+  if(navigator.clipboard && navigator.clipboard.writeText){
+    navigator.clipboard.writeText(txt).then(() => memFlash('whole trip copied \u2713'), () => fallbackCopy(txt));
+  } else { fallbackCopy(txt); }
+}
+
+function memFlash(msg){
+  document.querySelectorAll('.mem-sync').forEach(el => { el.textContent = msg; el.className = 'mem-sync'; });
+  setTimeout(updateSyncBadge, 2200);
+}
+
+function copyLog(){
+  const txt = buildDayLog();
+  if(!txt){ memFlash('nothing rated yet'); return; }
+  if(navigator.clipboard && navigator.clipboard.writeText){
+    navigator.clipboard.writeText(txt).then(() => memFlash('copied \u2713'), () => fallbackCopy(txt));
+  } else { fallbackCopy(txt); }
+}
+
+function fallbackCopy(txt){
+  const ta = document.createElement('textarea');
+  ta.value = txt; ta.style.position='fixed'; ta.style.opacity='0';
+  document.body.appendChild(ta); ta.select();
+  try { document.execCommand('copy'); memFlash('copied \u2713'); }
+  catch(err) { memFlash('copy failed \u2014 select manually'); }
+  document.body.removeChild(ta);
+}
+
+function shareLog(){
+  const txt = buildDayLog();
+  if(!txt){ memFlash('nothing rated yet'); return; }
+  if(navigator.share){ navigator.share({title:'Trip log', text:txt}).catch(() => {}); }
+  else { copyLog(); }
+}
+
+function resetMem(){
+  if(!confirm('Clear ratings and impressions stored on THIS device?\n\nAnything already committed to the trip data stays. Local edits not yet synced are lost.')) return;
+  try { localStorage.removeItem(MEM_KEY); } catch(err) {}
+  MEM = JSON.parse(JSON.stringify(COMMITTED));
+  render();
+}
+
+function saveNote(sIdx, eIdx, val) {
+  TRIP.days[activeDay].sections[sIdx].entries[eIdx].note = val;
+}
+
+function renderMap() {
+  // At a Glance: overview map — hotel stars + every booked (navy) and needs-booking (red) pin
+  if(activePart === 7) {
+    destroyMap();
+    setTimeout(() => {
+      const el = document.getElementById('the-map');
+      if(!el || typeof L === 'undefined') return;
+      const map = L.map('the-map', {zoomControl:true, attributionControl:true});
+      mapInstance = map;
+      addBaseTiles(map);
+      const bounds = [];
+      TRIP.hotels.forEach(ho => {
+        L.marker([ho.lat,ho.lng],{icon:hotelStarIcon()}).addTo(map)
+          .bindPopup(`<b>${ho.name}</b><br><small style="color:#888">${ho.dates}</small>`);
+        bounds.push([ho.lat,ho.lng]);
+      });
+      TRIP.days.forEach(d => d.sections.forEach(s => s.entries.forEach(e => {
+        if(!e.lat || !e.lng) return;
+        const st = entryState(e);
+        if(st.s === 'open') return;
+        const col = st.s === 'lock' ? '#1B3A6B' : st.s === 'wait' ? '#5b7db1' : '#c83a3a';
+        const icon = L.divIcon({
+          html:`<div style="width:12px;height:12px;border-radius:50%;background:${col};border:2.5px solid #fff;box-shadow:0 1px 4px rgba(0,0,0,0.25)"></div>`,
+          iconSize:[12,12], iconAnchor:[6,6], className:''
+        });
+        L.marker([e.lat,e.lng],{icon}).addTo(map)
+          .bindPopup(`<b style="font-size:12px">${glanceTitle(e.title)}</b><br><small style="color:#888">${d.date}${st.s === 'lock' ? (st.time ? ` · ${st.time}` : '') : ' · not booked'}</small>`);
+        bounds.push([e.lat,e.lng]);
+      })));
+      map.fitBounds(bounds, {padding:[32,32]});
+    }, 80);
+    return;
+  }
+  // Restaurant Ideas: one map with every candidate pin, no route line
+  if(activePart === 5) {
+    destroyMap();
+    setTimeout(() => {
+      const el = document.getElementById('the-map');
+      if(!el || typeof L === 'undefined') return;
+      const map = L.map('the-map', {zoomControl:true, attributionControl:true});
+      map._eatsMap = true;
+      mapInstance = map;
+      addBaseTiles(map);
+      const bounds = [];
+      const hotel = TRIP.hotels[0];
+      const hotelIcon = hotelStarIcon();
+      L.marker([hotel.lat,hotel.lng],{icon:hotelIcon}).addTo(map)
+        .bindPopup(`<b>${hotel.name}</b><br><small style="color:#888">${hotel.addr}</small>`);
+      bounds.push([hotel.lat,hotel.lng]);
+      eatMarkers = [];
+      TRIP.eats.forEach((e, i) => {
+        const icon = L.divIcon({
+          html:`<div style="width:12px;height:12px;border-radius:50%;background:${PIN_COLORS.food};border:2.5px solid #fff;box-shadow:0 1px 4px rgba(0,0,0,0.25)"></div>`,
+          iconSize:[12,12], iconAnchor:[6,6], className:''
+        });
+        eatMarkers[i] = L.marker([e.lat,e.lng],{icon}).addTo(map)
+          .bindPopup(`<b style="font-size:12px">${e.name}</b><br><small style="color:#888">${e.addr}${e.phone?` · ${e.phone}`:''}</small>`);
+        bounds.push([e.lat,e.lng]);
+      });
+      map.fitBounds(bounds, {padding:[32,32], maxZoom:15});
+    }, 80);
+    return;
+  }
+  if(activePart >= 3) return;
+  destroyMap();
+  const day = TRIP.days[activeDay];
+  const hotel = TRIP.hotels[day.hotel];
+
+  setTimeout(() => {
+    const el = document.getElementById('the-map');
+    if(!el || typeof L === 'undefined') return;
+
+    const map = L.map('the-map', {zoomControl:true, attributionControl:true});
+    mapInstance = map;
+      addBaseTiles(map);
+
+    const bounds = [];
+    const pinPoints = [];
+
+    // Hotel marker — star so the base stands out from the round stop pins
+    const hotelIcon = hotelStarIcon();
+    L.marker([hotel.lat,hotel.lng],{icon:hotelIcon}).addTo(map)
+      .bindPopup(`<b>${hotel.name}</b><br><small style="color:#888">${hotel.addr}</small>`);
+    bounds.push([hotel.lat,hotel.lng]);
+
+    day.sections.forEach(sec => {
+      sec.entries.forEach(e => {
+        if(!e.lat||!e.lng) return;
+        const col = pinColor(e.tags);
+        const icon = L.divIcon({
+          html:`<div style="width:12px;height:12px;border-radius:50%;background:${col};border:2.5px solid #fff;box-shadow:0 1px 4px rgba(0,0,0,0.25)"></div>`,
+          iconSize:[12,12], iconAnchor:[6,6], className:''
+        });
+        L.marker([e.lat,e.lng],{icon}).addTo(map)
+          .bindPopup(`<b style="font-size:12px">${e.title}</b>${e.addr&&e.addr!=='At hotel'&&e.addr!=='—'?`<br><small style="color:#888">${e.addr}</small>`:''}`);
+        bounds.push([e.lat,e.lng]);
+        pinPoints.push([e.lat,e.lng]);
+      });
+    });
+
+    // Dashed route line
+    if(pinPoints.length > 1) {
+      L.polyline(pinPoints, {color:'#c8773a', weight:1.5, dashArray:'5,6', opacity:0.6}).addTo(map);
+    }
+
+    if(bounds.length > 1) {
+      map.fitBounds(bounds, {padding:[32,32], maxZoom:15});
+    } else {
+      map.setView([hotel.lat,hotel.lng], 14);
+    }
+  }, 80);
+}
+
+function render() {
+  renderDayStrip();
+  renderLeft();
+  renderMap();
+}
+
+loadMem();
+/* On a trip day, land on that day rather than At a Glance. */
+const _today = todayIndex();
+if(_today >= 0) {
+  openDay(_today);
+} else {
+  document.getElementById('part-select').value = String(activePart);
+  render();
+}
+</script>
+<div class="sheet-back" id="sheet-back" onclick="closeSheet()"></div>
+<div class="sheet" id="sheet" role="dialog" aria-modal="true">
+  <div class="sheet-hd">
+    <div><h3 id="sheet-title"></h3><div class="sub" id="sheet-sub"></div></div>
+    <button type="button" class="sheet-x" onclick="closeSheet()" aria-label="Close">&times;</button>
+  </div>
+  <div class="sheet-body" id="sheet-body"></div>
+  <div class="sheet-ft">
+    <button type="button" class="mem-btn primary" onclick="copyLog()">Log today</button>
+    <button type="button" class="mem-btn" onclick="shareLog()">Share</button>
+    <span class="mem-sync"></span>
+  </div>
+</div>
+</body>
+</html>
