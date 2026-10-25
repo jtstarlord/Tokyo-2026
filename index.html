@@ -2507,7 +2507,7 @@ function openDay(di) {
 }
 
 function glanceTitle(t) {
-  t = t.replace(/\s*★\s*/g, ' ').replace(/\b\d{1,2}:\d{2}\s*(AM|PM)?/gi, '').replace(/\s{2,}/g, ' ').replace(/[,\s]+$/, '').trim();
+  t = t.replace(/\s*★\s*/g, ' ').replace(/\b\d{1,2}:\d{2}\s*(AM|PM)?/gi, '').replace(/\(\s*(slot)?\s*\)/g, '').replace(/\s{2,}/g, ' ').replace(/[,\s]+$/, '').trim();
   const ix = t.indexOf(' — ');
   if(ix >= 13) return t.slice(0, ix);
   return t;
