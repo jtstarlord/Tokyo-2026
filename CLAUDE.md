@@ -55,22 +55,23 @@ document.
 | 3 | Tue Dec 15 | Work day 1 | Sessions 9:30–17:30; team dinner yakitori (Birdland / Torishige) |
 | 4 | Wed Dec 16 | Work day 2 | Sessions; crab in a private room (Kani Doraku) |
 | 5 | Thu Dec 17 | Work day 3 | Last sessions; sushi (Kyubey); spa or in-room shiatsu late |
-| 6 | Fri Dec 18 | **Flex — confirm** | If open: Meiji Jingu 8:00, Omotesando, Ginza lunch sushi, Itoya, massage, gado-shita |
-| 7 | Sat Dec 19 | Home | Tsukiji round two 7:30; check-out 12:00 (14:00 asked); taxi 14:00; DL276 HND 5:30 PM |
+| 6 | Fri Dec 18 | Work morning, free afternoon | Sessions to 12:30; Ginza lunch sushi 13:30; Itoya hour; massage 17:00; Hikiniku to Come Shibuya 19:00 |
+| 7 | Sat Dec 19 | Home | Tsukiji round two 7:30; check-out 12:00 (14:00 asked); taxi 13:15; Ariso Sushi T3 4F landside 14:00; DL276 HND 5:30 PM |
 
 ## Open questions (as of Oct 25, 2026)
 
-1. **Office address.** "2 Come-on-1 Atago, Minato City" was read as 2-chōme-5-1 Atago, which is
-   Atago Green Hills MORI Tower (~10 min walk from the hotel, Kamiyacho exit 3). Every office card
-   carries "(confirm)" until the Japan team confirms. If it is a different Atago building the
-   walking route still holds; the block is small.
-2. **Friday Dec 18** — work day or open? The guide assumes open. If it is a work day, Friday
-   becomes a fourth `workday()` card and the Ginza/Omotesando track folds into Saturday morning.
-3. **Flight details.** All four flight facts (BOS→DTW time, DL275 departure, DL276 connection and
+1. **Flight details.** All four flight facts (BOS→DTW time, DL275 departure, DL276 connection and
    Boston arrival, seats, confirmation code) come from James's description, not a receipt. The
    bookings tab marks them BOOKED with "pending the receipt". Ingest the Delta receipt when it
    arrives.
-4. **Hotel confirmation** — rate, room category, Marriott confirmation number.
+2. **Hotel confirmation** — rate, room category, Marriott confirmation number.
+3. **Office reception floor and badge routine** at Atago Green Hills MORI Tower, from the Japan
+   team.
+4. **Hikiniku to Come Shibuya's street address** goes on the Friday card once the TableCheck or
+   Advance Priority Ticket confirmation is ingested.
+
+Resolved Oct 25: the office is **2-5-1 Atago (Atago Green Hills MORI Tower)**, and **Friday Dec 18
+is a work morning with the afternoon free**.
 
 ## Decisions already made
 
@@ -92,7 +93,19 @@ document.
   splurge options only if James says so this week (1–2 month lead); Ginza Iwa is the lunch value
   play for Friday or Saturday.
 - **No day trips.** Kamakura, Nikko and Hakone were not considered — a work week with one open
-  day does not support them.
+  afternoon does not support them.
+- **Yakitori ladder, best first:** Birdland Ginza (phone, 6 weeks) → Yakitori Imai (online from
+  abroad, the surest great one) → Torishige Shimbashi (concierge) → Kushiwakamaru Nakameguro
+  (walk-in clipboard). Torishiki is off the table: December seats were released Oct 1. Hold
+  Birdland and Imai in parallel and release one.
+- **Hikiniku to Come is Friday night** (Shibuya branch, reservation-only). The Advance Priority
+  Ticket on the official site is the safe route; TableCheck opens the following week on Fridays
+  at 9:00 JST. Fallback is yakitori under the Yurakucho tracks.
+- **7-Eleven is a card, not a footnote** — Sunday evening after check-in, with the Seven Bank ATM
+  as the week's cash machine.
+- **Saturday lunch is at Haneda:** Ariso Sushi, T3 4F Edo Koji, landside, open 24 h. Listings
+  disagree on whether it still has a conveyor belt; it reads as tablet-ordered counter service.
+  Ganso Sushi on T2 3F is the true belt, reachable by the free shuttle at the cost of Sky Club time.
 
 ## How James travels — carried over from Paris & Provence (Sep 2026)
 
@@ -128,6 +141,8 @@ and should drive any edits.
 ## Gotchas worth remembering
 
 - Tsukiji Outer Market: many stalls close Sunday and Wednesday; best 7:00–10:30; cash-first.
+- Hikiniku to Come Shibuya takes no walk-ins; Kichijoji takes no online bookings (same-day ticket
+  at 9:00, closed Wed). Prices and fees in third-party listings drift; trust the official site.
 - Birdland Ginza is phone-only, ~6 weeks out, closed Sun/Mon — the first concierge call.
 - Kani Doraku Ginza Hacchome: 10 private rooms, parties to 28, +81 3 3572 7272; the address
   block number differs between listings (8-7 vs 8-9 Ginza) — it is on Ginza Nine Bldg 2, 2F by
