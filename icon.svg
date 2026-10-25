@@ -1,0 +1,33 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="180" height="180" viewBox="0 0 180 180">
+  <!-- cream ground -->
+  <rect width="180" height="180" fill="#faf7f2"/>
+  <!-- rising sun, with a soft halo -->
+  <circle cx="90" cy="104" r="62" fill="#d93a2b" opacity="0.10"/>
+  <circle cx="90" cy="104" r="48" fill="#d93a2b"/>
+  <!-- horizon band -->
+  <rect x="0" y="142" width="180" height="38" fill="#faf7f2"/>
+  <rect x="0" y="142" width="180" height="3" fill="#c8a87a"/>
+  <!-- Tokyo Tower silhouette, gold -->
+  <g fill="#b8894f">
+    <!-- antenna -->
+    <rect x="88.5" y="22" width="3" height="18"/>
+    <!-- top deck -->
+    <path d="M84 40 L96 40 L98 50 L82 50 Z"/>
+    <!-- upper taper -->
+    <path d="M84 50 L96 50 L104 94 L76 94 Z"/>
+    <!-- main observatory -->
+    <path d="M72 94 L108 94 L110 106 L70 106 Z"/>
+    <!-- lower flare: the four legs as a single flaring body -->
+    <path d="M74 106 L106 106 L132 142 L48 142 Z"/>
+  </g>
+  <!-- cream window cutouts give the lattice feel -->
+  <g fill="#faf7f2">
+    <rect x="86" y="60" width="8" height="2.5"/>
+    <rect x="84" y="72" width="12" height="2.5"/>
+    <rect x="82" y="84" width="16" height="2.5"/>
+    <rect x="80" y="99" width="20" height="2.5"/>
+    <path d="M90 114 L101 132 L79 132 Z"/>
+    <path d="M62 142 L74 124 L80 130 L72 142 Z"/>
+    <path d="M118 142 L106 124 L100 130 L108 142 Z"/>
+  </g>
+</svg>
