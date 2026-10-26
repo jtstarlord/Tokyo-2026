@@ -60,8 +60,7 @@ document.
 
 ## Open questions (as of Oct 25, 2026)
 
-1. **Delta One seat on DL275** is not on the receipt (only 2D on DL1748 is). Pick it in the app.
-   DL1707 on Dec 19 carries a schedule-change flag that James should accept in My Trips.
+1. **DL1707 on Dec 19** carries a schedule-change flag that James should accept in My Trips.
 2. **Hotel confirmation** — rate, room category, Marriott confirmation number.
 3. **Office reception floor and badge routine** at Atago Green Hills MORI Tower, from the Japan
    team.
@@ -72,7 +71,7 @@ Resolved Oct 25: the office is **2-5-1 Atago (Atago Green Hills MORI Tower)**, a
 is a work morning with the afternoon free**. Resolved Oct 26: the Delta receipt (conf **HSI4WS**,
 eTicket 0067566409871) — DL1748 BOS 9:05 AM → DTW 11:29; DL275 DTW 2:05 PM → HND 5:45 PM +1;
 DL274 HND 5:35 PM → DTW 3:35 PM; DL1707 DTW 6:52 PM → BOS 8:51 PM. The return is DL274, not the
-DL276 the first build assumed.
+DL276 the first build assumed. Seats (from James, Oct 26): 2D, 7A, 3D, 2D.
 
 ## Decisions already made
 
