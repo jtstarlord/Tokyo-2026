@@ -98,9 +98,12 @@ DL276 the first build assumed. Seats (from James, Oct 26): 2D, 7A, 3D, 2D.
   abroad, the surest great one) → Torishige Shimbashi (concierge) → Kushiwakamaru Nakameguro
   (walk-in clipboard). Torishiki is off the table: December seats were released Oct 1. Hold
   Birdland and Imai in parallel and release one.
-- **Hikiniku to Come is Friday night** (Shibuya branch, reservation-only). The Advance Priority
-  Ticket on the official site is the safe route; TableCheck opens the following week on Fridays
-  at 9:00 JST. Fallback is yakitori under the Yurakucho tracks.
+- **Hikiniku to Come is Friday night** (Shibuya branch, online-only, no walk-ins, no phone).
+  TableCheck releases the whole next month on the 1st at 00:00 JST — December goes live Oct 31
+  at 11:00 AM Boston. The Advance Priority Ticket (¥1,000/seat, limited) is the paid guarantee.
+  There is no legitimate secondary market; concierge services do not list it. Backstop is the
+  Kichijoji original (same release, less contested, in-store same-day tickets at 9:00, closed
+  Wed) as a Monday lunch. Fallback is yakitori under the Yurakucho tracks.
 - **7-Eleven is a card, not a footnote** — Sunday evening after check-in, with the Seven Bank ATM
   as the week's cash machine.
 - **Saturday lunch is at Haneda:** Ariso Sushi, T3 4F Edo Koji, landside, open 24 h. Listings
@@ -141,8 +144,10 @@ and should drive any edits.
 ## Gotchas worth remembering
 
 - Tsukiji Outer Market: many stalls close Sunday and Wednesday; best 7:00–10:30; cash-first.
-- Hikiniku to Come Shibuya takes no walk-ins; Kichijoji takes no online bookings (same-day ticket
-  at 9:00, closed Wed). Prices and fees in third-party listings drift; trust the official site.
+- Hikiniku to Come Shibuya takes no walk-ins; Kichijoji has both TableCheck and in-store same-day
+  tickets at 9:00 (closed Wed). The "Friday 9 AM weekly release" in older blogs is the retired
+  system. Prices and fees in third-party listings drift; trust the official site, which is not
+  reachable from the cloud sandbox.
 - Birdland Ginza is phone-only, ~6 weeks out, closed Sun/Mon — the first concierge call.
 - Kani Doraku Ginza Hacchome: 10 private rooms, parties to 28, +81 3 3572 7272; the address
   block number differs between listings (8-7 vs 8-9 Ginza) — it is on Ginza Nine Bldg 2, 2F by
