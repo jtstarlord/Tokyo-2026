@@ -1429,18 +1429,18 @@ const TRIP = {
  ],
  "bookings": [
   {
-   "text": "Delta BOS→DTW (Sat Dec 12) — First Class",
-   "sub": "BOOKED per James · send me the Delta receipt and I'll ingest times, seats, confirmation code and the ticket number",
+   "text": "DL1748 BOS→DTW (Sat Dec 12, 9:05 AM) — Delta First, seat 2D",
+   "sub": "CONFIRMED · conf HSI4WS · eTicket 0067566409871 · Airbus A321 · Terminal A · lands DTW 11:29 AM, McNamara · 2 h 36 min connection · Platinum Medallion, Sky Priority · ticket valid to Oct 23, 2027",
    "done": true
   },
   {
-   "text": "DL275 DTW→HND (Sat Dec 12 → arr Sun Dec 13, 5:45 PM) — Delta One suite",
-   "sub": "BOOKED per James · ~13 h · seat, conf and exact departure time pending the receipt · Delta One = Sky Club DTW + lie-flat suite",
+   "text": "DL275 DTW→HND (Sat Dec 12, 2:05 PM → Sun Dec 13, 5:45 PM) — Delta One suite",
+   "sub": "CONFIRMED · conf HSI4WS · Airbus A350-900 · 13 h 40 min · arrives Haneda Terminal 3 · Delta One seat not shown on the receipt — pick or confirm it in the Fly Delta app · 18 h 40 min door to door",
    "done": true
   },
   {
-   "text": "DL276 HND→DTW→BOS (Sat Dec 19, 5:30 PM)",
-   "sub": "BOOKED per James · connection and Boston arrival pending the receipt · Delta Sky Club HND is on T3 5F, entry within 3 h of departure",
+   "text": "DL274 HND→DTW (Sat Dec 19, 5:35 PM) + DL1707 DTW→BOS (6:52 PM → 8:51 PM)",
+   "sub": "CONFIRMED · conf HSI4WS · DL274 A350-900 lands DTW 3:35 PM same day · 3 h 17 min connection · DL1707 A321 carries a SCHEDULE CHANGE flag on the receipt — open the trip in the app once and accept it, or Delta may hold the booking in limbo · Boston Terminal A 8:51 PM · the receipt says DL274, the earlier guide said DL276",
    "done": true
   },
   {
@@ -1699,8 +1699,8 @@ const TRIP = {
      "time": "IN THE AIR (SAT DEC 12)",
      "entries": [
       {
-       "title": "Delta BOS → DTW — First Class",
-       "addr": "Boston Logan Terminal A",
+       "title": "DL1748 BOS → DTW — Delta First, seat 2D (9:05 AM)",
+       "addr": "Boston Logan Terminal A → Detroit McNamara",
        "metro": "—",
        "walk": "—",
        "tags": [
@@ -1709,13 +1709,13 @@ const TRIP = {
        "lat": null,
        "lng": null,
        "ds": "flightDay",
-       "bk": "BOS→DTW",
-       "lock": "Sat AM",
-       "tips": "<b>Good to know:</b> Platinum + First means Sky Priority at check-in and the DTW Sky Club on the connection. Eat in the lounge, not the plane — the real meal is on the next leg. <b>Bags:</b> check the knife-sized bag through to HND; carry the deck, meds, chargers, a change of shirt.",
+       "bk": "DL1748",
+       "lock": "9:05 AM",
+       "tips": "<b>Confirmed:</b> HSI4WS, eTicket 0067566409871, Airbus A321, seat 2D Delta First, lands 11:29 AM. <b>Good to know:</b> Platinum + First means Sky Priority at check-in and the DTW Sky Club for the 2 h 36 min connection. Eat in the lounge, not the plane — the real meal is on the next leg. <b>Bags:</b> check the knife-sized bag through to HND; carry the deck, meds, chargers, a change of shirt. Be at Logan by 7:30.",
        "note": "Short hop. Hydrate; the clock game starts at DTW."
       },
       {
-       "title": "DL275 DTW → HND — Delta One suite, ~13 h",
+       "title": "DL275 DTW → HND — Delta One suite (2:05 PM → 5:45 PM +1)",
        "addr": "Detroit Metro McNamara → Haneda Terminal 3",
        "metro": "—",
        "walk": "—",
@@ -1727,9 +1727,9 @@ const TRIP = {
        "lng": null,
        "ds": "flightNight",
        "bk": "DL275",
-       "lock": "Sat PM",
-       "tips": "<b>The sleep plan:</b> you land at 17:45 local, so the goal is to arrive tired enough to sleep at 22:00 Tokyo time, not rested. Stay awake for the first meal (2 h), then sleep 5–6 h in the middle, then stay up for the last 4 h — read, watch, work. Set the watch to Tokyo at the door. <b>Paris lesson:</b> the eastbound redeye scored Sleep 2/5 in Comfort+; the suite is the fix, so use the mattress pad and the do-not-disturb and skip the second glass. <b>Rating dims:</b> seat, cabin, sleep, crew, food, worth it.",
-       "note": "The 13 hours that decide whether Monday is useful."
+       "lock": "2:05 PM",
+       "tips": "<b>Confirmed:</b> HSI4WS, Airbus A350-900, departs 2:05 PM, 13 h 40 min, lands Sunday 5:45 PM at Terminal 3. The Delta One seat is not on the receipt — choose it in the app (a window suite on the A350, forward of the galley). <b>The sleep plan:</b> you land at 17:45 local, so the goal is to arrive tired enough to sleep at 22:00 Tokyo time, not rested. Stay awake for the first meal (2 h), then sleep 5–6 h in the middle, then stay up for the last 4 h — read, watch, work. Set the watch to Tokyo at the door. <b>Paris lesson:</b> the eastbound redeye scored Sleep 2/5 in Comfort+; the suite is the fix, so use the mattress pad and the do-not-disturb and skip the second glass. <b>Rating dims:</b> seat, cabin, sleep, crew, food, worth it.",
+       "note": "The 13 hours and 40 minutes that decide whether Monday is useful."
       }
      ]
     },
@@ -2450,9 +2450,9 @@ const TRIP = {
    "label": "Dec 19",
    "sub": "Sat",
    "theme": "Last morning — Tsukiji round two, then Haneda",
-   "sub2": "Market 7:30 · check-out 12 (late 14:00 asked) · taxi 13:15 · Ariso Sushi at T3 · DL 5:30 PM",
+   "sub2": "Market 7:30 · check-out 12 (late 14:00 asked) · taxi 13:15 · Ariso Sushi at T3 · DL274 5:35 PM",
    "location": "Tsukiji · Toranomon · Haneda",
-   "note": "Saturday is Tsukiji's busiest day — go at 7:30 or not at all. Lunch is at the airport: Ariso Sushi on Terminal 3's landside Edo Koji floor, so the taxi leaves at 13:15 and the 17:30 departure still has a two-hour buffer after Delta One check-in.",
+   "note": "Saturday is Tsukiji's busiest day — go at 7:30 or not at all. Lunch is at the airport: Ariso Sushi on Terminal 3's landside Edo Koji floor, so the taxi leaves at 13:15 and the 17:35 departure still has a two-hour buffer after Delta One check-in.",
    "hotel": 0,
    "sections": [
     {
@@ -2504,7 +2504,7 @@ const TRIP = {
        ],
        "lat": 35.5444,
        "lng": 139.7676,
-       "tips": "<b>Concierge books the taxi</b> for 13:15 — 25–35 min, ~¥8,000–10,000. <b>At T3:</b> Delta One / Sky Priority counters on the 3F departures floor first, bags off, then up to 4F for lunch, then security and the Delta Sky Club on 5F (entry within 3 h of departure). Duty free after security for the whisky and KitKats.",
+       "tips": "<b>Concierge books the taxi</b> for 13:15 — 25–35 min, ~¥8,000–10,000. <b>At T3:</b> Delta One / Sky Priority counters on the 3F departures floor first, bags off, then up to 4F for lunch, then security and the Delta Sky Club on 5F (entry within 3 h of the 5:35 PM departure). Duty free after security for the whisky and KitKats.",
        "note": "Buffer is generous on purpose."
       },
       {
@@ -2523,7 +2523,7 @@ const TRIP = {
        "note": "Last meal in Japan. Rate it against Tsukiji."
       },
       {
-       "title": "DL276 HND → DTW → BOS (5:30 PM) — Delta One suite",
+       "title": "DL274 HND → DTW → BOS (5:35 PM) — Delta One suite",
        "addr": "Haneda Terminal 3",
        "metro": "—",
        "walk": "—",
@@ -2534,10 +2534,10 @@ const TRIP = {
        "lat": null,
        "lng": null,
        "ds": "flightNight",
-       "bk": "DL276",
-       "lock": "5:30 PM",
-       "tips": "<b>The sleep plan, eastbound:</b> you land in Detroit the same Saturday afternoon local time and lose the day twice. Eat the first meal, sleep as much as the suite allows in the middle (this is the leg to try the 90-minute wind-down: no screen, mask, the pad), then stay awake from DTW to Boston and go to bed at Boston time. <b>Connection:</b> DTW Sky Club, then the short hop — details from the receipt.",
-       "note": "Last card. Rate the suite honestly against the outbound."
+       "bk": "DL274",
+       "lock": "5:35 PM",
+       "tips": "<b>Confirmed:</b> HSI4WS. DL274 Airbus A350-900 departs 5:35 PM, lands Detroit 3:35 PM the same Saturday (you cross the date line and gain the day back). Then 3 h 17 min at DTW and <b>DL1707</b> at 6:52 PM, Airbus A321, into Boston Terminal A at <b>8:51 PM</b>. The receipt flags a <b>schedule change</b> on DL1707 — open My Trips once and accept it so the connection is protected. <b>The sleep plan, eastbound:</b> eat the first meal, sleep as much as the suite allows in the middle (no screen, mask, the pad), then stay awake from DTW to Boston and go to bed at Boston time. <b>Connection:</b> DTW Sky Club, immigration and customs happen in Detroit, so allow the bag re-check.",
+       "note": "Last card. Rate the suite against the outbound."
       }
      ]
     }

@@ -3,7 +3,7 @@
 James Plath's business trip to Tokyo, **Sat Dec 12 – Sat Dec 19, 2026**. Solo. Three full work
 days (Tue–Thu) of AI training sessions and 1:1s for the Japan partners and associates — what and
 how to sell, and how delivery changes with AI — bracketed by an arrival Sunday, an acclimation
-Monday, a flex Friday and a free Saturday morning before a 5:30 PM departure.
+Monday, a flex Friday and a free Saturday morning before a 5:35 PM departure.
 
 This repo is the trip app, built from the Paris-2026 template: a single self-contained
 `index.html` (markup + CSS + one `<script>` holding a global `TRIP` object), plus
@@ -50,20 +50,18 @@ document.
 
 | Day | Date | Theme | Fixed points |
 |---|---|---|---|
-| 1 | Sun Dec 13 | Boston → Tokyo | Sat BOS→DTW First; DL275 DTW→HND Delta One; land 5:45 PM; EDITION check-in; bed by 22:00 |
+| 1 | Sun Dec 13 | Boston → Tokyo | Sat DL1748 BOS→DTW 9:05 First (2D); DL275 DTW→HND 2:05 PM Delta One; land 5:45 PM; EDITION check-in; bed by 22:00 |
 | 2 | Mon Dec 14 | Acclimation | Tsukiji 7:30; Hamarikyu matcha; rest to 14:00; scout the office walk + Atago steps; Spa 15:00; teamLab 17:00; Azabudai dinner |
 | 3 | Tue Dec 15 | Work day 1 | Sessions 9:30–17:30; team dinner yakitori (Birdland / Torishige) |
 | 4 | Wed Dec 16 | Work day 2 | Sessions; crab in a private room (Kani Doraku) |
 | 5 | Thu Dec 17 | Work day 3 | Last sessions; sushi (Kyubey); spa or in-room shiatsu late |
 | 6 | Fri Dec 18 | Work morning, free afternoon | Sessions to 12:30; Ginza lunch sushi 13:30; Itoya hour; massage 17:00; Hikiniku to Come Shibuya 19:00 |
-| 7 | Sat Dec 19 | Home | Tsukiji round two 7:30; check-out 12:00 (14:00 asked); taxi 13:15; Ariso Sushi T3 4F landside 14:00; DL276 HND 5:30 PM |
+| 7 | Sat Dec 19 | Home | Tsukiji round two 7:30; check-out 12:00 (14:00 asked); taxi 13:15; Ariso Sushi T3 4F landside 14:00; DL274 HND 5:35 PM → DTW 3:35 PM → DL1707 → BOS 8:51 PM |
 
 ## Open questions (as of Oct 25, 2026)
 
-1. **Flight details.** All four flight facts (BOS→DTW time, DL275 departure, DL276 connection and
-   Boston arrival, seats, confirmation code) come from James's description, not a receipt. The
-   bookings tab marks them BOOKED with "pending the receipt". Ingest the Delta receipt when it
-   arrives.
+1. **Delta One seat on DL275** is not on the receipt (only 2D on DL1748 is). Pick it in the app.
+   DL1707 on Dec 19 carries a schedule-change flag that James should accept in My Trips.
 2. **Hotel confirmation** — rate, room category, Marriott confirmation number.
 3. **Office reception floor and badge routine** at Atago Green Hills MORI Tower, from the Japan
    team.
@@ -71,7 +69,10 @@ document.
    Advance Priority Ticket confirmation is ingested.
 
 Resolved Oct 25: the office is **2-5-1 Atago (Atago Green Hills MORI Tower)**, and **Friday Dec 18
-is a work morning with the afternoon free**.
+is a work morning with the afternoon free**. Resolved Oct 26: the Delta receipt (conf **HSI4WS**,
+eTicket 0067566409871) — DL1748 BOS 9:05 AM → DTW 11:29; DL275 DTW 2:05 PM → HND 5:45 PM +1;
+DL274 HND 5:35 PM → DTW 3:35 PM; DL1707 DTW 6:52 PM → BOS 8:51 PM. The return is DL274, not the
+DL276 the first build assumed.
 
 ## Decisions already made
 
